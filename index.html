@@ -3,398 +3,163 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Deep Learning for Computer Vision — Course Portal</title>
+  <title>Deep Learning for Computer Vision</title>
+  <link rel="stylesheet" href="css/portal.css" />
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: #f5f6fa;
-      color: #2c3e50;
-      line-height: 1.6;
-    }
-
-    header {
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%);
-      color: white;
-      padding: 48px 32px 40px;
-      text-align: center;
-    }
-
-    header h1 {
-      font-size: 2rem;
-      font-weight: 700;
-      letter-spacing: -0.5px;
-      margin-bottom: 8px;
-    }
-
-    header p {
-      font-size: 1rem;
-      opacity: 0.75;
-    }
-
-    nav {
-      background: white;
-      border-bottom: 1px solid #e0e0e0;
+    /* Timeline */
+    .timeline { display: flex; flex-direction: column; gap: 0; margin-top: 20px; }
+    .timeline-item {
       display: flex;
+      gap: 20px;
+      position: relative;
+    }
+    .timeline-item:not(:last-child)::before {
+      content: '';
+      position: absolute;
+      left: 19px;
+      top: 40px;
+      bottom: -10px;
+      width: 2px;
+      background: #dde1f0;
+    }
+    .timeline-dot {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
       justify-content: center;
-      gap: 4px;
-      padding: 0 16px;
-      position: sticky;
-      top: 0;
-      z-index: 100;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+      margin-top: 2px;
+      position: relative;
+      z-index: 1;
     }
-
-    nav a {
-      color: #555;
-      text-decoration: none;
-      font-size: 0.88rem;
-      font-weight: 500;
-      padding: 14px 16px;
-      border-bottom: 2px solid transparent;
-      transition: color 0.2s, border-color 0.2s;
-    }
-
-    nav a:hover {
-      color: #0f3460;
-      border-bottom-color: #0f3460;
-    }
-
-    .container {
-      max-width: 980px;
-      margin: 0 auto;
-      padding: 40px 24px;
-    }
-
-    section { margin-bottom: 48px; }
-
-    section h2 {
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: #0f3460;
-      margin-bottom: 16px;
-      padding-bottom: 8px;
-      border-bottom: 2px solid #e8eaf6;
-    }
-
-    .card-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 16px;
-    }
-
-    .card {
+    .dot-blue  { background: #e8eaf6; }
+    .dot-red   { background: #fdecea; }
+    .dot-green { background: #e8f5e9; }
+    .timeline-body {
       background: white;
       border: 1px solid #e8eaf6;
       border-radius: 10px;
-      padding: 18px 20px;
-      text-decoration: none;
-      color: inherit;
-      transition: box-shadow 0.2s, transform 0.15s;
-      display: block;
+      padding: 16px 20px;
+      flex: 1;
+      margin-bottom: 14px;
     }
-
-    .card:hover {
-      box-shadow: 0 4px 18px rgba(15,52,96,0.12);
-      transform: translateY(-2px);
-    }
-
-    .card .tag {
-      font-size: 0.7rem;
-      font-weight: 600;
+    .timeline-body .tl-label {
+      font-size: 0.72rem;
+      font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      color: #6c7ae0;
-      margin-bottom: 6px;
-    }
-
-    .card h3 {
-      font-size: 0.97rem;
-      font-weight: 600;
-      color: #1a1a2e;
       margin-bottom: 4px;
     }
-
-    .card p {
-      font-size: 0.83rem;
-      color: #777;
-    }
-
-    .assignment-list {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    .assignment-item {
-      background: white;
-      border: 1px solid #e8eaf6;
-      border-radius: 10px;
-      padding: 18px 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-    }
-
-    .assignment-item .info h3 {
-      font-size: 1rem;
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-
-    .assignment-item .info p {
-      font-size: 0.85rem;
-      color: #666;
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: #0f3460;
-      color: white;
-      text-decoration: none;
-      padding: 9px 18px;
-      border-radius: 6px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      white-space: nowrap;
-      transition: background 0.2s;
-    }
-
-    .btn:hover { background: #1a4a80; }
-
-    .resources-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 12px;
-    }
-
-    .resource-item {
-      background: white;
-      border: 1px solid #e8eaf6;
-      border-radius: 8px;
-      padding: 14px 16px;
-      text-decoration: none;
-      color: inherit;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 0.9rem;
-      font-weight: 500;
-      transition: box-shadow 0.2s;
-    }
-
-    .resource-item:hover {
-      box-shadow: 0 3px 12px rgba(0,0,0,0.09);
-    }
-
-    .resource-item .icon {
-      font-size: 1.3rem;
-      flex-shrink: 0;
-    }
-
-    footer {
-      text-align: center;
-      padding: 32px;
-      color: #aaa;
-      font-size: 0.82rem;
-      border-top: 1px solid #e8eaf6;
-      background: white;
-    }
+    .tl-blue  { color: #5c6bc0; }
+    .tl-red   { color: #e05c5c; }
+    .tl-green { color: #43a047; }
+    .timeline-body h3 { font-size: 0.97rem; font-weight: 600; margin-bottom: 4px; }
+    .timeline-body p  { font-size: 0.83rem; color: #666; line-height: 1.6; }
+    .timeline-body a  { font-size: 0.83rem; color: #0f3460; font-weight: 500; text-decoration: none; }
+    .timeline-body a:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
 
 <header>
   <h1>Deep Learning for Computer Vision</h1>
-  <p>Course notes, assignments, and resources</p>
+  <p>5-month research training program</p>
 </header>
 
 <nav>
-  <a href="#basics">Basics</a>
-  <a href="#neural-networks">Neural Networks</a>
-  <a href="#deep-learning">Deep Learning</a>
-  <a href="#advanced">Advanced</a>
-  <a href="#assignments">Assignments</a>
-  <a href="#resources">Resources</a>
+  <a href="index.html" class="active">Home</a>
+  <a href="modules.html">Modules</a>
+  <a href="assignments.html">Assignments</a>
+  <a href="research.html">Research</a>
+  <a href="resources.html">Resources</a>
+  <a href="contact.html">Contact</a>
 </nav>
 
-<div class="container">
+<main>
 
-  <!-- BASICS -->
-  <section id="basics">
-    <h2>1. Image Classification &amp; Linear Models</h2>
-    <div class="card-grid">
-      <a class="card" href="classification.html">
-        <div class="tag">Lecture Note</div>
-        <h3>Image Classification</h3>
-        <p>k-NN, data-driven approach, image preprocessing</p>
-      </a>
-      <a class="card" href="linear-classify.html">
-        <div class="tag">Lecture Note</div>
-        <h3>Linear Classification</h3>
-        <p>SVM loss, Softmax, parametric approach</p>
-      </a>
-      <a class="card" href="optimization-1.html">
-        <div class="tag">Lecture Note</div>
-        <h3>Optimization I</h3>
-        <p>Gradient descent, SGD, random search</p>
-      </a>
-      <a class="card" href="optimization-2.html">
-        <div class="tag">Lecture Note</div>
-        <h3>Optimization II</h3>
-        <p>Backpropagation, chain rule, computation graphs</p>
-      </a>
-    </div>
-  </section>
+  <p class="page-title">Program Overview</p>
+  <p class="page-desc">This is a 5-month program. The first phase builds your deep learning foundations through coursework. The second phase transitions you into active research — starting with a structured onboarding project, then opening up to independent research if you're ready.</p>
 
-  <!-- NEURAL NETWORKS -->
-  <section id="neural-networks">
-    <h2>2. Neural Networks</h2>
-    <div class="card-grid">
-      <a class="card" href="neural-networks-1.html">
-        <div class="tag">Lecture Note</div>
-        <h3>Neural Networks I</h3>
-        <p>Biological motivation, activation functions, architecture</p>
-      </a>
-      <a class="card" href="neural-networks-2.html">
-        <div class="tag">Lecture Note</div>
-        <h3>Neural Networks II</h3>
-        <p>Data preprocessing, weight initialization, regularization</p>
-      </a>
-      <a class="card" href="neural-networks-3.html">
-        <div class="tag">Lecture Note</div>
-        <h3>Neural Networks III</h3>
-        <p>Gradient checks, learning rate schedules, hyperparameter tuning</p>
-      </a>
-      <a class="card" href="neural-networks-case-study.html">
-        <div class="tag">Case Study</div>
-        <h3>Neural Networks Case Study</h3>
-        <p>Full end-to-end implementation walkthrough</p>
-      </a>
-    </div>
-  </section>
+  <!-- TIMELINE -->
+  <section class="block">
+    <h2 class="section-title">Program Timeline</h2>
 
-  <!-- DEEP LEARNING / CNNs -->
-  <section id="deep-learning">
-    <h2>3. Convolutional Neural Networks</h2>
-    <div class="card-grid">
-      <a class="card" href="convolutional-networks.html">
-        <div class="tag">Lecture Note</div>
-        <h3>Convolutional Networks</h3>
-        <p>Conv layers, pooling, architecture design</p>
-      </a>
-      <a class="card" href="understanding-cnn.html">
-        <div class="tag">Lecture Note</div>
-        <h3>Understanding CNNs</h3>
-        <p>Visualizing filters, saliency maps, feature inversion</p>
-      </a>
-      <a class="card" href="transfer-learning.html">
-        <div class="tag">Lecture Note</div>
-        <h3>Transfer Learning</h3>
-        <p>Fine-tuning pretrained models, when to use</p>
-      </a>
-      <a class="card" href="convnet-tips.html">
-        <div class="tag">Tips</div>
-        <h3>ConvNet Tips &amp; Tricks</h3>
-        <p>Practical advice for training ConvNets</p>
-      </a>
-    </div>
-  </section>
+    <div class="timeline">
 
-  <!-- ADVANCED -->
-  <section id="advanced">
-    <h2>4. Advanced Topics</h2>
-    <div class="card-grid">
-      <a class="card" href="rnn.html">
-        <div class="tag">Lecture Note</div>
-        <h3>Recurrent Neural Networks</h3>
-        <p>RNN, LSTM, GRU, language modeling</p>
-      </a>
-      <a class="card" href="attention.html">
-        <div class="tag">Lecture Note</div>
-        <h3>Attention Mechanisms</h3>
-        <p>Seq2seq, attention, self-attention basics</p>
-      </a>
-      <a class="card" href="transformers.html">
-        <div class="tag">Lecture Note</div>
-        <h3>Transformers</h3>
-        <p>Multi-head attention, positional encoding, ViT</p>
-      </a>
-      <a class="card" href="generative-models.html">
-        <div class="tag">Lecture Note</div>
-        <h3>Generative Models</h3>
-        <p>VAE, GAN, flow-based models overview</p>
-      </a>
-      <a class="card" href="generative-modeling.html">
-        <div class="tag">Lecture Note</div>
-        <h3>Generative Modeling (Deep Dive)</h3>
-        <p>PixelCNN, DDPM, diffusion models</p>
-      </a>
-      <a class="card" href="pixelrnn.html">
-        <div class="tag">Lecture Note</div>
-        <h3>PixelRNN &amp; PixelCNN</h3>
-        <p>Autoregressive generative models</p>
-      </a>
-      <a class="card" href="adversary-attacks.html">
-        <div class="tag">Lecture Note</div>
-        <h3>Adversarial Attacks</h3>
-        <p>FGSM, PGD, adversarial robustness</p>
-      </a>
-    </div>
-  </section>
-
-  <!-- ASSIGNMENTS -->
-  <section id="assignments">
-    <h2>Assignments</h2>
-    <div class="assignment-list">
-      <div class="assignment-item">
-        <div class="info">
-          <h3>Assignment 1</h3>
-          <p>k-NN · Softmax · Two-Layer Net · Image Features</p>
+      <div class="timeline-item">
+        <div class="timeline-dot dot-blue">📚</div>
+        <div class="timeline-body">
+          <div class="tl-label tl-blue">Phase 1 · Month 1 – 1.5</div>
+          <h3>Coursework &amp; Assignments</h3>
+          <p>Work through the 3 course modules and complete all 3 assignments. This gives you the foundation in deep learning — CNNs, optimization, transformers — needed for the research phase.</p>
+          <br>
+          <a href="modules.html">View Modules →</a> &nbsp;·&nbsp; <a href="assignments.html">View Assignments →</a>
         </div>
-        <a class="btn" href="assignments/assignment1.zip">Download ZIP</a>
       </div>
-      <div class="assignment-item">
-        <div class="info">
-          <h3>Assignment 2</h3>
-          <p>Batch Normalization · Dropout · ConvNets · PyTorch on CIFAR-10</p>
+
+      <div class="timeline-item">
+        <div class="timeline-dot dot-red">🔬</div>
+        <div class="timeline-body">
+          <div class="tl-label tl-red">Phase 2 · Month 1.5 – 5</div>
+          <h3>Research — Robust Fine-Tuning (Onboarding)</h3>
+          <p>Start with the RFT onboarding project: read two papers on robust fine-tuning, then reproduce the results using the provided notebook. This is designed to teach you how to read papers, run experiments, and structure findings.</p>
+          <br>
+          <a href="research.html">Go to Research Track →</a>
         </div>
-        <a class="btn" href="assignments/assignment2.zip">Download ZIP</a>
       </div>
-      <div class="assignment-item">
-        <div class="info">
-          <h3>Assignment 3</h3>
-          <p>Transformers · Self-Supervised Learning · DDPM · CLIP &amp; DINO</p>
+
+      <div class="timeline-item">
+        <div class="timeline-dot dot-green">🚀</div>
+        <div class="timeline-body">
+          <div class="tl-label tl-green">Phase 3 · For Advanced Students</div>
+          <h3>Independent Research Topics</h3>
+          <p>If you complete the onboarding project ahead of schedule, or already have a strong background, you are encouraged to propose and explore your own research direction. Discuss with the instructor to define a topic and plan.</p>
+          <br>
+          <a href="contact.html">Contact instructor to discuss →</a>
         </div>
-        <a class="btn" href="assignments/assignment3.zip">Download ZIP</a>
       </div>
+
     </div>
   </section>
 
-  <!-- RESOURCES -->
-  <section id="resources">
-    <h2>Setup &amp; Resources</h2>
-    <div class="resources-list">
-      <a class="resource-item" href="setup.html">
-        <span class="icon">⚙️</span> Environment Setup
+  <!-- QUICK LINKS -->
+  <section class="block">
+    <h2 class="section-title">Quick Navigation</h2>
+    <div class="home-grid">
+      <a class="home-card" href="modules.html">
+        <div class="hicon">📚</div>
+        <h3>Modules</h3>
+        <p>3 modules of lecture notes</p>
       </a>
-      <a class="resource-item" href="python-numpy-tutorial.html">
-        <span class="icon">🐍</span> Python &amp; NumPy Tutorial
+      <a class="home-card" href="assignments.html">
+        <div class="hicon">📝</div>
+        <h3>Assignments</h3>
+        <p>3 assignments with starter code</p>
       </a>
-      <a class="resource-item" href="jupyter-colab-tutorial.html">
-        <span class="icon">📓</span> Jupyter &amp; Colab Guide
+      <a class="home-card" href="research.html">
+        <div class="hicon">🔬</div>
+        <h3>Research</h3>
+        <p>Papers + reproduction notebook</p>
+      </a>
+      <a class="home-card" href="resources.html">
+        <div class="hicon">🔗</div>
+        <h3>Resources</h3>
+        <p>Textbooks, videos, writing guide</p>
+      </a>
+      <a class="home-card" href="contact.html">
+        <div class="hicon">✉️</div>
+        <h3>Contact</h3>
+        <p>Email &amp; office hours</p>
       </a>
     </div>
   </section>
 
-</div>
+</main>
 
-<footer>
-  Deep Learning for Computer Vision — Course materials adapted from Stanford CS231n
-</footer>
+<footer>Deep Learning for Computer Vision — adapted from Stanford CS231n</footer>
 
 </body>
 </html>

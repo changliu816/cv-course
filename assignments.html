@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Assignments — Deep Learning for Computer Vision</title>
+  <link rel="stylesheet" href="css/portal.css" />
+</head>
+<body>
+
+<header>
+  <h1>Deep Learning for Computer Vision</h1>
+  <p>Course portal — lecture notes, assignments, research, and resources</p>
+</header>
+
+<nav>
+  <a href="index.html">Home</a>
+  <a href="modules.html">Modules</a>
+  <a href="assignments.html" class="active">Assignments</a>
+  <a href="research.html">Research</a>
+  <a href="resources.html">Resources</a>
+  <a href="contact.html">Contact</a>
+</nav>
+
+<main>
+
+  <p class="page-title">Assignments</p>
+  <p class="page-desc">Three assignments — download the starter code, complete the notebooks, and submit. Read the corresponding module lecture notes before starting each assignment.</p>
+
+  <section class="block">
+    <div class="assignment-list">
+
+      <div class="assignment-item">
+        <div class="info">
+          <h3>Assignment 1 — Image Classification</h3>
+          <p>Covers <strong>Module 1</strong>. Implement classifiers from scratch in NumPy.</p>
+          <ul>
+            <li>k-Nearest Neighbor classifier</li>
+            <li>Support Vector Machine (SVM)</li>
+            <li>Softmax classifier</li>
+            <li>Two-layer neural network</li>
+          </ul>
+        </div>
+        <a class="btn" href="assignments/assignment1.zip">&#8595; Download</a>
+      </div>
+
+      <div class="assignment-item">
+        <div class="info">
+          <h3>Assignment 2 — Deep Networks &amp; ConvNets</h3>
+          <p>Covers <strong>Module 2</strong>. Implement and train deep networks in PyTorch.</p>
+          <ul>
+            <li>Multi-layer fully connected networks</li>
+            <li>Batch Normalization &amp; Layer Normalization</li>
+            <li>Dropout regularization</li>
+            <li>Convolutional Neural Networks</li>
+            <li>PyTorch training on CIFAR-10</li>
+          </ul>
+        </div>
+        <a class="btn" href="assignments/assignment2.zip">&#8595; Download</a>
+      </div>
+
+      <div class="assignment-item">
+        <div class="info">
+          <h3>Assignment 3 — Sequential Models</h3>
+          <p>Covers <strong>Module 3</strong>. Build RNN and Transformer models for image captioning on COCO.</p>
+          <ul>
+            <li>Image captioning with vanilla RNNs</li>
+            <li>Image captioning with Transformers</li>
+          </ul>
+        </div>
+        <a class="btn" href="assignments/assignment3.zip">&#8595; Download</a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SOLUTIONS -->
+  <section class="block">
+    <h2 class="section-title">Solutions</h2>
+    <div class="honor-box">
+      <p>
+        Solutions are provided as a <strong>learning reference</strong> — to review your approach after completing the work, understand alternative implementations, or get unstuck on a specific concept.<br><br>
+        Submitting solutions as your own work defeats the purpose of the course. Please only proceed if you have genuinely attempted the assignment first.
+      </p>
+      <div class="honor-check-row">
+        <input type="checkbox" id="honor-pledge" onchange="toggleSolutions(this)" />
+        <label for="honor-pledge">I have completed (or seriously attempted) the assignment on my own.</label>
+      </div>
+      <div class="solutions-links" id="solutions-links">
+        <a class="resource-item" href="https://github.com/MahanFathi/CS231" target="_blank">
+          <span class="icon">💡</span>
+          <div class="text">
+            <h4>CS231n Assignment Solutions — MahanFathi/CS231</h4>
+            <p>GitHub · Solutions for Assignment 1, 2, and 3 with explanations</p>
+          </div>
+          <span class="arrow">↗</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>Deep Learning for Computer Vision — adapted from Stanford CS231n</footer>
+
+<script>
+  function toggleSolutions(checkbox) {
+    document.getElementById('solutions-links').classList.toggle('visible', checkbox.checked);
+  }
+</script>
+
+</body>
+</html>

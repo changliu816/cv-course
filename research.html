@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Research — Deep Learning for Computer Vision</title>
+  <link rel="stylesheet" href="css/portal.css" />
+</head>
+<body>
+
+<header>
+  <h1>Deep Learning for Computer Vision</h1>
+  <p>Course portal — lecture notes, assignments, research, and resources</p>
+</header>
+
+<nav>
+  <a href="index.html">Home</a>
+  <a href="modules.html">Modules</a>
+  <a href="assignments.html">Assignments</a>
+  <a href="research.html" class="active">Research</a>
+  <a href="resources.html">Resources</a>
+  <a href="contact.html">Contact</a>
+</nav>
+
+<main>
+
+  <p class="page-title">Research Track — Robust Fine-Tuning</p>
+  <p class="page-desc">This track follows the three course modules. You will read two research papers on robust fine-tuning, then reproduce the results using the provided notebook.</p>
+
+  <!-- ONBOARDING READING -->
+  <section class="block">
+    <h2 class="section-title">Start Here — Research Onboarding</h2>
+    <p class="section-sub">Before diving into the papers, read 周志华's guide on how to do research and write papers. This is required reading for the research phase.</p>
+    <div class="resource-list">
+      <a class="resource-item" href="assets/resources/zhouzhihua-research-writing.pdf" target="_blank">
+        <span class="icon">📊</span>
+        <div class="text">
+          <h4>做研究与写论文 — 周志华</h4>
+          <p>南京大学 · 如何做研究、读论文、写论文的系统指导，适合研究入门阅读</p>
+        </div>
+        <span class="arrow">↗</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- BACKGROUND -->
+  <section class="block">
+    <h2 class="section-title">Background</h2>
+    <p style="font-size:0.92rem; color:#444; line-height:1.8;">
+      Large pretrained vision-language models (e.g. CLIP) achieve strong <em>zero-shot</em> accuracy across diverse data distributions.
+      However, standard fine-tuning on a specific target dataset improves in-distribution performance while often <strong>hurting robustness</strong> to distribution shifts.
+      <br><br>
+      This research track studies two methods that address this tradeoff — and asks you to reproduce one of them on the iWildCam benchmark.
+    </p>
+  </section>
+
+  <!-- PAPERS -->
+  <section class="block">
+    <h2 class="section-title">Step 1 — Read the Papers</h2>
+    <p class="section-sub">Read both papers before working on the reproduction notebook.</p>
+    <div class="resource-list">
+
+      <a class="resource-item" href="https://arxiv.org/abs/2109.01903" target="_blank">
+        <span class="icon">📄</span>
+        <div class="text">
+          <h4>Paper 1 — Robust Fine-Tuning of Zero-Shot Models (WiSE-FT)</h4>
+          <p>Wortsman et al., CVPR 2022 · Weight-space ensembling of zero-shot and fine-tuned model weights to retain robustness after adapting CLIP to a target dataset</p>
+        </div>
+        <span class="arrow">↗</span>
+      </a>
+
+      <a class="resource-item" href="https://arxiv.org/abs/2212.00638" target="_blank">
+        <span class="icon">📄</span>
+        <div class="text">
+          <h4>Paper 2 — Finetune Like You Pretrain (FLYP)</h4>
+          <p>Goyal et al., CVPR 2023 · Aligning the fine-tuning objective with the contrastive pretraining objective improves both accuracy and distribution shift robustness</p>
+        </div>
+        <span class="arrow">↗</span>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- NOTEBOOK -->
+  <section class="block">
+    <h2 class="section-title">Step 2 — Reproduce the Results</h2>
+    <p class="section-sub">Use the notebook below to reproduce robust fine-tuning experiments on iWildCam. Run on Google Colab (GPU required).</p>
+
+    <div style="background:white; border:1px solid #e8eaf6; border-left:4px solid #e05c5c; border-radius:10px; padding:22px 26px; margin-bottom:16px;">
+      <h3 style="font-size:1rem; font-weight:600; margin-bottom:6px;">What the notebook covers</h3>
+      <ul style="font-size:0.87rem; color:#555; padding-left:18px; line-height:2;">
+        <li>Upgrading Colab to Pro (free for students)</li>
+        <li>Setting up the GPU runtime (A100)</li>
+        <li>Mounting Google Drive and cloning the codebase</li>
+        <li>Downloading the iWildCam v2 dataset</li>
+        <li>Configuring and launching the training job</li>
+      </ul>
+    </div>
+
+    <div style="display:flex; align-items:center; gap:16px; background:white; border:1px solid #e8eaf6; border-radius:10px; padding:20px 24px; flex-wrap:wrap;">
+      <div style="flex:1; min-width:200px;">
+        <div style="font-size:0.93rem; font-weight:600; margin-bottom:3px;">RFT.ipynb — Reproduction Notebook</div>
+        <div style="font-size:0.83rem; color:#777;">Colab-ready · iWildCam · Robust fine-tuning pipeline</div>
+      </div>
+      <a class="btn" href="assets/resources/RFT.ipynb" download>&#8595; Download Notebook</a>
+    </div>
+  </section>
+
+</main>
+
+<footer>Deep Learning for Computer Vision — adapted from Stanford CS231n</footer>
+
+</body>
+</html>
