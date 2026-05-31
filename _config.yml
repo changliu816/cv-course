@@ -1,0 +1,20 @@
+# Site settings
+title: Deep Learning for Computer Vision
+description: "Course materials, lecture notes, and assignments."
+baseurl: ""
+url: ""
+
+# Build settings
+markdown: kramdown
+permalink: pretty
+
+highlighter: rouge
+kramdown:
+  input: GFM
+  auto_ids: true
+  syntax_highlighter: rouge
+
+# Assignment downloads
+hw_1: assignments/assignment1.zip
+hw_2: assignments/assignment2.zip
+hw_3: assignments/assignment3.zip

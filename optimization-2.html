@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>optimization-2</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <script
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"
+  type="text/javascript"></script>
+</head>
+<body>
+<p>Table of Contents:</p>
+<ul>
+<li><a href="#intro">Introduction</a></li>
+<li><a href="#grad">Simple expressions, interpreting the
+gradient</a></li>
+<li><a href="#backprop">Compound expressions, chain rule,
+backpropagation</a></li>
+<li><a href="#intuitive">Intuitive understanding of
+backpropagation</a></li>
+<li><a href="#sigmoid">Modularity: Sigmoid example</a></li>
+<li><a href="#staged">Backprop in practice: Staged computation</a></li>
+<li><a href="#patterns">Patterns in backward flow</a></li>
+<li><a href="#mat">Gradients for vectorized operations</a></li>
+<li><a href="#summary">Summary</a></li>
+</ul>
+<p><a name='intro'></a></p>
+<h3 id="introduction">Introduction</h3>
+<p><strong>Motivation</strong>. In this section we will develop
+expertise with an intuitive understanding of
+<strong>backpropagation</strong>, which is a way of computing gradients
+of expressions through recursive application of <strong>chain
+rule</strong>. Understanding of this process and its subtleties is
+critical for you to understand, and effectively develop, design and
+debug neural networks.</p>
+<p><strong>Problem statement</strong>. The core problem studied in this
+section is as follows: We are given some function \(f(x)\) where \(x\)
+is a vector of inputs and we are interested in computing the gradient of
+\(f\) at \(x\) (i.e. \(f(x)\) ).</p>
+<p><strong>Motivation</strong>. Recall that the primary reason we are
+interested in this problem is that in the specific case of neural
+networks, \(f\) will correspond to the loss function ( \(L\) ) and the
+inputs \(x\) will consist of the training data and the neural network
+weights. For example, the loss could be the SVM loss function and the
+inputs are both the training data \((x_i,y_i), i=1 N\) and the weights
+and biases \(W,b\). Note that (as is usually the case in Machine
+Learning) we think of the training data as given and fixed, and of the
+weights as variables we have control over. Hence, even though we can
+easily use backpropagation to compute the gradient on the input examples
+\(x_i\), in practice we usually only compute the gradient for the
+parameters (e.g. \(W,b\)) so that we can use it to perform a parameter
+update. However, as we will see later in the class the gradient on
+\(x_i\) can still be useful sometimes, for example for purposes of
+visualization and interpreting what the Neural Network might be
+doing.</p>
+<p>If you are coming to this class and you’re comfortable with deriving
+gradients with chain rule, we would still like to encourage you to at
+least skim this section, since it presents a rarely developed view of
+backpropagation as backward flow in real-valued circuits and any
+insights you’ll gain may help you throughout the class.</p>
+<p><a name='grad'></a></p>
+<h3 id="simple-expressions-and-interpretation-of-the-gradient">Simple
+expressions and interpretation of the gradient</h3>
+<p>Lets start simple so that we can develop the notation and conventions
+for more complex expressions. Consider a simple multiplication function
+of two numbers \(f(x,y) = x y\). It is a matter of simple calculus to
+derive the partial derivative for either input:</p>
+<p><span class="math display">\[
+f(x,y) = x y \hspace{0.5in} \rightarrow \hspace{0.5in} \frac{\partial
+f}{\partial x} = y \hspace{0.5in} \frac{\partial f}{\partial y} = x
+\]</span></p>
+<p><strong>Interpretation</strong>. Keep in mind what the derivatives
+tell you: They indicate the rate of change of a function with respect to
+that variable surrounding an infinitesimally small region near a
+particular point:</p>
+<p><span class="math display">\[
+\frac{df(x)}{dx} = \lim_{h\ \to 0} \frac{f(x + h) - f(x)}{h}
+\]</span></p>
+<p>A technical note is that the division sign on the left-hand side is,
+unlike the division sign on the right-hand side, not a division.
+Instead, this notation indicates that the operator \( \) is being
+applied to the function \(f\), and returns a different function (the
+derivative). A nice way to think about the expression above is that when
+\(h\) is very small, then the function is well-approximated by a
+straight line, and the derivative is its slope. In other words, the
+derivative on each variable tells you the sensitivity of the whole
+expression on its value. For example, if \(x = 4, y = -3\) then \(f(x,y)
+= -12\) and the derivative on \(x\) \( = -3\). This tells us that if we
+were to increase the value of this variable by a tiny amount, the effect
+on the whole expression would be to decrease it (due to the negative
+sign), and by three times that amount. This can be seen by rearranging
+the above equation ( \( f(x + h) = f(x) + h \) ). Analogously, since \(
+= 4\), we expect that increasing the value of \(y\) by some very small
+amount \(h\) would also increase the output of the function (due to the
+positive sign), and by \(4h\).</p>
+<blockquote>
+<p>The derivative on each variable tells you the sensitivity of the
+whole expression on its value.</p>
+</blockquote>
+<p>As mentioned, the gradient \(f\) is the vector of partial
+derivatives, so we have that \(f = [, ] = [y, x]\). Even though the
+gradient is technically a vector, we will often use terms such as
+<em>“the gradient on x”</em> instead of the technically correct phrase
+<em>“the partial derivative on x”</em> for simplicity.</p>
+<p>We can also derive the derivatives for the addition operation:</p>
+<p><span class="math display">\[
+f(x,y) = x + y \hspace{0.5in} \rightarrow \hspace{0.5in} \frac{\partial
+f}{\partial x} = 1 \hspace{0.5in} \frac{\partial f}{\partial y} = 1
+\]</span></p>
+<p>that is, the derivative on both \(x,y\) is one regardless of what the
+values of \(x,y\) are. This makes sense, since increasing either \(x,y\)
+would increase the output of \(f\), and the rate of that increase would
+be independent of what the actual values of \(x,y\) are (unlike the case
+of multiplication above). The last function we’ll use quite a bit in the
+class is the <em>max</em> operation:</p>
+<p><span class="math display">\[
+f(x,y) = \max(x, y) \hspace{0.5in} \rightarrow \hspace{0.5in}
+\frac{\partial f}{\partial x} = \mathbb{1}(x &gt;= y) \hspace{0.5in}
+\frac{\partial f}{\partial y} = \mathbb{1}(y &gt;= x)
+\]</span></p>
+<p>That is, the (sub)gradient is 1 on the input that was larger and 0 on
+the other input. Intuitively, if the inputs are \(x = 4,y = 2\), then
+the max is 4, and the function is not sensitive to the setting of \(y\).
+That is, if we were to increase it by a tiny amount \(h\), the function
+would keep outputting 4, and therefore the gradient is zero: there is no
+effect. Of course, if we were to change \(y\) by a large amount
+(e.g. larger than 2), then the value of \(f\) would change, but the
+derivatives tell us nothing about the effect of such large changes on
+the inputs of a function; They are only informative for tiny,
+infinitesimally small changes on the inputs, as indicated by the \(_{h
+}\) in its definition.</p>
+<p><a name='backprop'></a></p>
+<h3 id="compound-expressions-with-chain-rule">Compound expressions with
+chain rule</h3>
+<p>Lets now start to consider more complicated expressions that involve
+multiple composed functions, such as \(f(x,y,z) = (x + y) z\). This
+expression is still simple enough to differentiate directly, but we’ll
+take a particular approach to it that will be helpful with understanding
+the intuition behind backpropagation. In particular, note that this
+expression can be broken down into two expressions: \(q = x + y\) and
+\(f = q z\). Moreover, we know how to compute the derivatives of both
+expressions separately, as seen in the previous section. \(f\) is just
+multiplication of \(q\) and \(z\), so \( = z, = q\), and \(q\) is
+addition of \(x\) and \(y\) so \( = 1, = 1 \). However, we don’t
+necessarily care about the gradient on the intermediate value \(q\) -
+the value of \(\) is not useful. Instead, we are ultimately interested
+in the gradient of \(f\) with respect to its inputs \(x,y,z\). The
+<strong>chain rule</strong> tells us that the correct way to “chain”
+these gradient expressions together is through multiplication. For
+example, \( = \). In practice this is simply a multiplication of the two
+numbers that hold the two gradients. Lets see this with an example:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># set some inputs</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> <span class="op">-</span><span class="dv">2</span><span class="op">;</span> y <span class="op">=</span> <span class="dv">5</span><span class="op">;</span> z <span class="op">=</span> <span class="op">-</span><span class="dv">4</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># perform the forward pass</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>q <span class="op">=</span> x <span class="op">+</span> y <span class="co"># q becomes 3</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>f <span class="op">=</span> q <span class="op">*</span> z <span class="co"># f becomes -12</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># perform the backward pass (backpropagation) in reverse order:</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co"># first backprop through f = q * z</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>dfdz <span class="op">=</span> q <span class="co"># df/dz = q, so gradient on z becomes 3</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>dfdq <span class="op">=</span> z <span class="co"># df/dq = z, so gradient on q becomes -4</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>dqdx <span class="op">=</span> <span class="fl">1.0</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>dqdy <span class="op">=</span> <span class="fl">1.0</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co"># now backprop through q = x + y</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>dfdx <span class="op">=</span> dfdq <span class="op">*</span> dqdx  <span class="co"># The multiplication here is the chain rule!</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>dfdy <span class="op">=</span> dfdq <span class="op">*</span> dqdy  </span></code></pre></div>
+<p>We are left with the gradient in the variables
+<code>[dfdx,dfdy,dfdz]</code>, which tell us the sensitivity of the
+variables <code>x,y,z</code> on <code>f</code>!. This is the simplest
+example of backpropagation. Going forward, we will use a more concise
+notation that omits the <code>df</code> prefix. For example, we will
+simply write <code>dq</code> instead of <code>dfdq</code>, and always
+assume that the gradient is computed on the final output.</p>
+<p>This computation can also be nicely visualized with a circuit
+diagram:</p>
+<div class="fig figleft fighighlight">
+<svg style="max-width: 420px" viewbox="0 0 420 220">
+<defs><marker id="arrowhead" refX="6" refY="2" markerWidth="6" markerHeight="4" orient="auto"><path d="M 0,0 V 4 L6,2 Z"></path></marker></defs><line x1="40" y1="30" x2="110" y2="30" stroke="black" stroke-width="1"></line><text x="45" y="24" font-size="16" fill="green">-2</text><text x="45" y="47" font-size="16" fill="red">-4</text><text x="35" y="24" font-size="16" text-anchor="end" fill="black">x</text><line x1="40" y1="100" x2="110" y2="100" stroke="black" stroke-width="1"></line><text x="45" y="94" font-size="16" fill="green">5</text><text x="45" y="117" font-size="16" fill="red">-4</text><text x="35" y="94" font-size="16" text-anchor="end" fill="black">y</text><line x1="40" y1="170" x2="110" y2="170" stroke="black" stroke-width="1"></line><text x="45" y="164" font-size="16" fill="green">-4</text><text x="45" y="187" font-size="16" fill="red">3</text><text x="35" y="164" font-size="16" text-anchor="end" fill="black">z</text><line x1="210" y1="65" x2="280" y2="65" stroke="black" stroke-width="1"></line><text x="215" y="59" font-size="16" fill="green">3</text><text x="215" y="82" font-size="16" fill="red">-4</text><text x="205" y="59" font-size="16" text-anchor="end" fill="black">q</text><circle cx="170" cy="65" fill="white" stroke="black" stroke-width="1" r="20"></circle><text x="170" y="70" font-size="20" fill="black" text-anchor="middle">+</text><line x1="110" y1="30" x2="150" y2="65" stroke="black" stroke-width="1" marker-end="url(#arrowhead)"></line><line x1="110" y1="100" x2="150" y2="65" stroke="black" stroke-width="1" marker-end="url(#arrowhead)"></line><line x1="190" y1="65" x2="210" y2="65" stroke="black" stroke-width="1" marker-end="url(#arrowhead)"></line><line x1="380" y1="117" x2="450" y2="117" stroke="black" stroke-width="1"></line><text x="385" y="111" font-size="16" fill="green">-12</text><text x="385" y="134" font-size="16" fill="red">1</text><text x="375" y="111" font-size="16" text-anchor="end" fill="black">f</text><circle cx="340" cy="117" fill="white" stroke="black" stroke-width="1" r="20"></circle><text x="340" y="127" font-size="20" fill="black" text-anchor="middle">*</text><line x1="280" y1="65" x2="320" y2="117" stroke="black" stroke-width="1" marker-end="url(#arrowhead)"></line><line x1="110" y1="170" x2="320" y2="117" stroke="black" stroke-width="1" marker-end="url(#arrowhead)"></line><line x1="360" y1="117" x2="380" y2="117" stroke="black" stroke-width="1" marker-end="url(#arrowhead)"></line>
+</svg>
+<div class="figcaption">
+<p>The real-valued <i>“circuit”</i> on left shows the visual
+representation of the computation. The <b>forward pass</b> computes
+values from inputs to output (shown in green). The <b>backward pass</b>
+then performs backpropagation which starts at the end and recursively
+applies the chain rule to compute the gradients (shown in red) all the
+way to the inputs of the circuit. The gradients can be thought of as
+flowing backwards through the circuit.</p>
+</div>
+<div style="clear:both;">
+
+</div>
+</div>
+<p><a name='intuitive'></a></p>
+<h3 id="intuitive-understanding-of-backpropagation">Intuitive
+understanding of backpropagation</h3>
+<p>Notice that backpropagation is a beautifully local process. Every
+gate in a circuit diagram gets some inputs and can right away compute
+two things: 1. its output value and 2. the <em>local</em> gradient of
+its output with respect to its inputs. Notice that the gates can do this
+completely independently without being aware of any of the details of
+the full circuit that they are embedded in. However, once the forward
+pass is over, during backpropagation the gate will eventually learn
+about the gradient of its output value on the final output of the entire
+circuit. Chain rule says that the gate should take that gradient and
+multiply it into every gradient it normally computes for all of its
+inputs.</p>
+<blockquote>
+<p>This extra multiplication (for each input) due to the chain rule can
+turn a single and relatively useless gate into a cog in a complex
+circuit such as an entire neural network.</p>
+</blockquote>
+<p>Lets get an intuition for how this works by referring again to the
+example. The add gate received inputs [-2, 5] and computed output 3.
+Since the gate is computing the addition operation, its local gradient
+for both of its inputs is +1. The rest of the circuit computed the final
+value, which is -12. During the backward pass in which the chain rule is
+applied recursively backwards through the circuit, the add gate (which
+is an input to the multiply gate) learns that the gradient for its
+output was -4. If we anthropomorphize the circuit as wanting to output a
+higher value (which can help with intuition), then we can think of the
+circuit as “wanting” the output of the add gate to be lower (due to
+negative sign), and with a <em>force</em> of 4. To continue the
+recurrence and to chain the gradient, the add gate takes that gradient
+and multiplies it to all of the local gradients for its inputs (making
+the gradient on both <strong>x</strong> and <strong>y</strong> 1 * -4 =
+-4). Notice that this has the desired effect: If <strong>x,y</strong>
+were to decrease (responding to their negative gradient) then the add
+gate’s output would decrease, which in turn makes the multiply gate’s
+output increase.</p>
+<p>Backpropagation can thus be thought of as gates communicating to each
+other (through the gradient signal) whether they want their outputs to
+increase or decrease (and how strongly), so as to make the final output
+value higher.</p>
+<p><a name='sigmoid'></a></p>
+<h3 id="modularity-sigmoid-example">Modularity: Sigmoid example</h3>
+<p>The gates we introduced above are relatively arbitrary. Any kind of
+differentiable function can act as a gate, and we can group multiple
+gates into a single gate, or decompose a function into multiple gates
+whenever it is convenient. Lets look at another expression that
+illustrates this point:</p>
+<p><span class="math display">\[
+f(w,x) = \frac{1}{1+e^{-(w_0x_0 + w_1x_1 + w_2)}}
+\]</span></p>
+<p>as we will see later in the class, this expression describes a
+2-dimensional neuron (with inputs <strong>x</strong> and weights
+<strong>w</strong>) that uses the <em>sigmoid activation</em> function.
+But for now lets think of this very simply as just a function from
+inputs <em>w,x</em> to a single number. The function is made up of
+multiple gates. In addition to the ones described already above (add,
+mul, max), there are four more:</p>
+<p><span class="math display">\[
+f(x) = \frac{1}{x}
+\hspace{1in} \rightarrow \hspace{1in}
+\frac{df}{dx} = -1/x^2
+\\\\
+f_c(x) = c + x
+\hspace{1in} \rightarrow \hspace{1in}
+\frac{df}{dx} = 1
+\\\\
+f(x) = e^x
+\hspace{1in} \rightarrow \hspace{1in}
+\frac{df}{dx} = e^x
+\\\\
+f_a(x) = ax
+\hspace{1in} \rightarrow \hspace{1in}
+\frac{df}{dx} = a
+\]</span></p>
+<p>Where the functions \(f_c, f_a\) translate the input by a constant of
+\(c\) and scale the input by a constant of \(a\), respectively. These
+are technically special cases of addition and multiplication, but we
+introduce them as (new) unary gates here since we do not need the
+gradients for the constants \(c,a\). The full circuit then looks as
+follows:</p>
+<div class="fig figleft fighighlight">
+<svg style="max-width: 799px" viewbox="0 0 799 306">
+<g transform="scale(0.8)"><defs><marker id="arrowhead" refX="6" refY="2" markerWidth="6" markerHeight="4" orient="auto"><path d="M 0,0 V 4 L6,2 Z"></path></marker></defs><line x1="50" y1="30" x2="90" y2="30" stroke="black" stroke-width="1"></line><text x="55" y="24" font-size="16" fill="green">2.00</text><text x="55" y="47" font-size="16" fill="red">-0.20</text><text x="45" y="24" font-size="16" text-anchor="end" fill="black">w0</text><line x1="50" y1="100" x2="90" y2="100" stroke="black" stroke-width="1"></line><text x="55" y="94" font-size="16" fill="green">-1.00</text><text x="55" y="117" font-size="16" fill="red">0.39</text><text x="45" y="94" font-size="16" text-anchor="end" fill="black">x0</text><line x1="50" y1="170" x2="90" y2="170" stroke="black" stroke-width="1"></line><text x="55" y="164" font-size="16" fill="green">-3.00</text><text x="55" y="187" font-size="16" fill="red">-0.39</text><text x="45" y="164" font-size="16" text-anchor="end" fill="black">w1</text><line x1="50" y1="240" x2="90" y2="240" stroke="black" stroke-width="1"></line><text x="55" y="234" font-size="16" fill="green">-2.00</text><text x="55" y="257" font-size="16" fill="red">-0.59</text><text x="45" y="234" font-size="16" text-anchor="end" fill="black">x1</text><line x1="50" y1="310" x2="90" y2="310" stroke="black" stroke-width="1"></line><text x="55" y="304" font-size="16" fill="green">-3.00</text><text x="55" y="327" font-size="16" fill="red">0.20</text><text x="45" y="304" font-size="16" text-anchor="end" fill="black">w2</text><line x1="170" y1="65" x2="210" y2="65" stroke="black" stroke-width="1"></line><text x="175" y="59" font-size="16" fill="green">-2.00</text><text x="175" y="82" font-size="16" fill="red">0.20</text><circle cx="130" cy="65" fill="white" stroke="black" stroke-width="1" r="20"></circle><text x="130" y="75" font-size="20" fill="black" text-anchor="middle"><em></text><line x1="90" y1="30" x2="110" y2="65" stroke="black" stroke-width="1" marker-end="url(#arrowhead)"></line><line x1="90" y1="100" x2="110" y2="65" stroke="black" stroke-width="1" marker-end="url(#arrowhead)"></line><line x1="150" y1="65" x2="170" y2="65" stroke="black" stroke-width="1" marker-end="url(#arrowhead)"></line><line x1="170" y1="205" x2="210" y2="205" stroke="black" stroke-width="1"></line><text x="175" y="199" font-size="16" fill="green">6.00</text><text x="175" y="222" font-size="16" fill="red">0.20</text><circle cx="130" cy="205" fill="white" stroke="black" stroke-width="1" r="20"></circle><text x="130" y="215" font-size="20" fill="black" text-anchor="middle"></em></text><line x1="90" y1="170" x2="110" y2="205" stroke="black" stroke-width="1" marker-end="url(#arrowhead)"></line><line x1="90" y1="240" x2="110" y2="205" stroke="black" stroke-width="1" marker-end="url(#arrowhead)"></line><line x1="150" y1="205" x2="170" y2="205" stroke="black" stroke-width="1" marker-end="url(#arrowhead)"></line><line x1="290" y1="135" x2="330" y2="135" stroke="black" stroke-width="1"></line><text x="295" y="129" font-size="16" fill="green">4.00</text><text x="295" y="152" font-size="16" fill="red">0.20</text><circle cx="250" cy="135" fill="white" stroke="black" stroke-width="1" r="20"></circle><text x="250" y="140" font-size="20" fill="black" text-anchor="middle">+</text><line x1="210" y1="65" x2="230" y2="135" stroke="black" stroke-width="1" marker-end="url(#arrowhead)"></line><line x1="210" y1="205" x2="230" y2="135" stroke="black" stroke-width="1" marker-end="url(#arrowhead)"></line><line x1="270" y1="135" x2="290" y2="135" stroke="black" stroke-width="1" marker-end="url(#arrowhead)"></line><line x1="410" y1="222" x2="450" y2="222" stroke="black" stroke-width="1"></line><text x="415" y="216" font-size="16" fill="green">1.00</text><text x="415" y="239" font-size="16" fill="red">0.20</text><circle cx="370" cy="222" fill="white" stroke="black" stroke-width="1" r="20"></circle><text x="370" y="227" font-size="20" fill="black" text-anchor="middle">+</text><line x1="330" y1="135" x2="350" y2="222" stroke="black" stroke-width="1" marker-end="url(#arrowhead)"></line><line x1="90" y1="310" x2="350" y2="222" stroke="black" stroke-width="1" marker-end="url(#arrowhead)"></line><line x1="390" y1="222" x2="410" y2="222" stroke="black" stroke-width="1" marker-end="url(#arrowhead)"></line><line x1="530" y1="222" x2="570" y2="222" stroke="black" stroke-width="1"></line><text x="535" y="216" font-size="16" fill="green">-1.00</text><text x="535" y="239" font-size="16" fill="red">-0.20</text><circle cx="490" cy="222" fill="white" stroke="black" stroke-width="1" r="20"></circle><text x="490" y="227" font-size="20" fill="black" text-anchor="middle">*-1</text><line x1="450" y1="222" x2="470" y2="222" stroke="black" stroke-width="1" marker-end="url(#arrowhead)"></line><line x1="510" y1="222" x2="530" y2="222" stroke="black" stroke-width="1" marker-end="url(#arrowhead)"></line><line x1="650" y1="222" x2="690" y2="222" stroke="black" stroke-width="1"></line><text x="655" y="216" font-size="16" fill="green">0.37</text><text x="655" y="239" font-size="16" fill="red">-0.53</text><circle cx="610" cy="222" fill="white" stroke="black" stroke-width="1" r="20"></circle><text x="610" y="227" font-size="20" fill="black" text-anchor="middle">exp</text><line x1="570" y1="222" x2="590" y2="222" stroke="black" stroke-width="1" marker-end="url(#arrowhead)"></line><line x1="630" y1="222" x2="650" y2="222" stroke="black" stroke-width="1" marker-end="url(#arrowhead)"></line><line x1="770" y1="222" x2="810" y2="222" stroke="black" stroke-width="1"></line><text x="775" y="216" font-size="16" fill="green">1.37</text><text x="775" y="239" font-size="16" fill="red">-0.53</text><circle cx="730" cy="222" fill="white" stroke="black" stroke-width="1" r="20"></circle><text x="730" y="227" font-size="20" fill="black" text-anchor="middle">+1</text><line x1="690" y1="222" x2="710" y2="222" stroke="black" stroke-width="1" marker-end="url(#arrowhead)"></line><line x1="750" y1="222" x2="770" y2="222" stroke="black" stroke-width="1" marker-end="url(#arrowhead)"></line><line x1="890" y1="222" x2="930" y2="222" stroke="black" stroke-width="1"></line><text x="895" y="216" font-size="16" fill="green">0.73</text><text x="895" y="239" font-size="16" fill="red">1.00</text><circle cx="850" cy="222" fill="white" stroke="black" stroke-width="1" r="20"></circle><text x="850" y="227" font-size="20" fill="black" text-anchor="middle">1/x</text><line x1="810" y1="222" x2="830" y2="222" stroke="black" stroke-width="1" marker-end="url(#arrowhead)"></line><line x1="870" y1="222" x2="890" y2="222" stroke="black" stroke-width="1" marker-end="url(#arrowhead)"></line></g>
+</svg>
+<div class="figcaption">
+<p>Example circuit for a 2D neuron with a sigmoid activation function.
+The inputs are [x0,x1] and the (learnable) weights of the neuron are
+[w0,w1,w2]. As we will see later, the neuron computes a dot product with
+the input and then its activation is softly squashed by the sigmoid
+function to be in range from 0 to 1.</p>
+</div>
+<div style="clear:both;">
+
+</div>
+</div>
+<p>In the example above, we see a long chain of function applications
+that operates on the result of the dot product between
+<strong>w,x</strong>. The function that these operations implement is
+called the <em>sigmoid function</em> \((x)\). It turns out that the
+derivative of the sigmoid function with respect to its input simplifies
+if you perform the derivation (after a fun tricky part where we add and
+subtract a 1 in the numerator):</p>
+<p><span class="math display">\[
+\sigma(x) = \frac{1}{1+e^{-x}} \\\\
+\rightarrow \hspace{0.3in} \frac{d\sigma(x)}{dx} =
+\frac{e^{-x}}{(1+e^{-x})^2} = \left( \frac{1 + e^{-x} - 1}{1 + e^{-x}}
+\right) \left( \frac{1}{1+e^{-x}} \right)
+= \left( 1 - \sigma(x) \right) \sigma(x)
+\]</span></p>
+<p>As we see, the gradient turns out to simplify and becomes
+surprisingly simple. For example, the sigmoid expression receives the
+input 1.0 and computes the output 0.73 during the forward pass. The
+derivation above shows that the <em>local</em> gradient would simply be
+(1 - 0.73) * 0.73 ~= 0.2, as the circuit computed before (see the image
+above), except this way it would be done with a single, simple and
+efficient expression (and with less numerical issues). Therefore, in any
+real practical application it would be very useful to group these
+operations into a single gate. Lets see the backprop for this neuron in
+code:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>w <span class="op">=</span> [<span class="dv">2</span>,<span class="op">-</span><span class="dv">3</span>,<span class="op">-</span><span class="dv">3</span>] <span class="co"># assume some random weights and data</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> [<span class="op">-</span><span class="dv">1</span>, <span class="op">-</span><span class="dv">2</span>]</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># forward pass</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>dot <span class="op">=</span> w[<span class="dv">0</span>]<span class="op">*</span>x[<span class="dv">0</span>] <span class="op">+</span> w[<span class="dv">1</span>]<span class="op">*</span>x[<span class="dv">1</span>] <span class="op">+</span> w[<span class="dv">2</span>]</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>f <span class="op">=</span> <span class="fl">1.0</span> <span class="op">/</span> (<span class="dv">1</span> <span class="op">+</span> math.exp(<span class="op">-</span>dot)) <span class="co"># sigmoid function</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co"># backward pass through the neuron (backpropagation)</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>ddot <span class="op">=</span> (<span class="dv">1</span> <span class="op">-</span> f) <span class="op">*</span> f <span class="co"># gradient on dot variable, using the sigmoid gradient derivation</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>dx <span class="op">=</span> [w[<span class="dv">0</span>] <span class="op">*</span> ddot, w[<span class="dv">1</span>] <span class="op">*</span> ddot] <span class="co"># backprop into x</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>dw <span class="op">=</span> [x[<span class="dv">0</span>] <span class="op">*</span> ddot, x[<span class="dv">1</span>] <span class="op">*</span> ddot, <span class="fl">1.0</span> <span class="op">*</span> ddot] <span class="co"># backprop into w</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co"># we&#39;re done! we have the gradients on the inputs to the circuit</span></span></code></pre></div>
+<p><strong>Implementation protip: staged backpropagation</strong>. As
+shown in the code above, in practice it is always helpful to break down
+the forward pass into stages that are easily backpropped through. For
+example here we created an intermediate variable <code>dot</code> which
+holds the output of the dot product between <code>w</code> and
+<code>x</code>. During backward pass we then successively compute (in
+reverse order) the corresponding variables (e.g. <code>ddot</code>, and
+ultimately <code>dw, dx</code>) that hold the gradients of those
+variables.</p>
+<p>The point of this section is that the details of how the
+backpropagation is performed, and which parts of the forward function we
+think of as gates, is a matter of convenience. It helps to be aware of
+which parts of the expression have easy local gradients, so that they
+can be chained together with the least amount of code and effort.</p>
+<p><a name='staged'></a></p>
+<h3 id="backprop-in-practice-staged-computation">Backprop in practice:
+Staged computation</h3>
+<p>Lets see this with another example. Suppose that we have a function
+of the form:</p>
+<p><span class="math display">\[
+f(x,y) = \frac{x + \sigma(y)}{\sigma(x) + (x+y)^2}
+\]</span></p>
+<p>To be clear, this function is completely useless and it’s not clear
+why you would ever want to compute its gradient, except for the fact
+that it is a good example of backpropagation in practice. It is very
+important to stress that if you were to launch into performing the
+differentiation with respect to either \(x\) or \(y\), you would end up
+with very large and complex expressions. However, it turns out that
+doing so is completely unnecessary because we don’t need to have an
+explicit function written down that evaluates the gradient. We only have
+to know how to compute it. Here is how we would structure the forward
+pass of such expression:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> <span class="dv">3</span> <span class="co"># example values</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> <span class="op">-</span><span class="dv">4</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># forward pass</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>sigy <span class="op">=</span> <span class="fl">1.0</span> <span class="op">/</span> (<span class="dv">1</span> <span class="op">+</span> math.exp(<span class="op">-</span>y)) <span class="co"># sigmoid in numerator   #(1)</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>num <span class="op">=</span> x <span class="op">+</span> sigy <span class="co"># numerator                               #(2)</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>sigx <span class="op">=</span> <span class="fl">1.0</span> <span class="op">/</span> (<span class="dv">1</span> <span class="op">+</span> math.exp(<span class="op">-</span>x)) <span class="co"># sigmoid in denominator #(3)</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>xpy <span class="op">=</span> x <span class="op">+</span> y                                              <span class="co">#(4)</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>xpysqr <span class="op">=</span> xpy<span class="op">**</span><span class="dv">2</span>                                          <span class="co">#(5)</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>den <span class="op">=</span> sigx <span class="op">+</span> xpysqr <span class="co"># denominator                        #(6)</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>invden <span class="op">=</span> <span class="fl">1.0</span> <span class="op">/</span> den                                       <span class="co">#(7)</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>f <span class="op">=</span> num <span class="op">*</span> invden <span class="co"># done!                                 #(8)</span></span></code></pre></div>
+<p>Phew, by the end of the expression we have computed the forward pass.
+Notice that we have structured the code in such way that it contains
+multiple intermediate variables, each of which are only simple
+expressions for which we already know the local gradients. Therefore,
+computing the backprop pass is easy: We’ll go backwards and for every
+variable along the way in the forward pass
+(<code>sigy, num, sigx, xpy, xpysqr, den, invden</code>) we will have
+the same variable, but one that begins with a <code>d</code>, which will
+hold the gradient of the output of the circuit with respect to that
+variable. Additionally, note that every single piece in our backprop
+will involve computing the local gradient of that expression, and
+chaining it with the gradient on that expression with a multiplication.
+For each row, we also highlight which part of the forward pass it refers
+to:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># backprop f = num * invden</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>dnum <span class="op">=</span> invden <span class="co"># gradient on numerator                             #(8)</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>dinvden <span class="op">=</span> num                                                     <span class="co">#(8)</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># backprop invden = 1.0 / den </span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>dden <span class="op">=</span> (<span class="op">-</span><span class="fl">1.0</span> <span class="op">/</span> (den<span class="op">**</span><span class="dv">2</span>)) <span class="op">*</span> dinvden                                <span class="co">#(7)</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co"># backprop den = sigx + xpysqr</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>dsigx <span class="op">=</span> (<span class="dv">1</span>) <span class="op">*</span> dden                                                <span class="co">#(6)</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>dxpysqr <span class="op">=</span> (<span class="dv">1</span>) <span class="op">*</span> dden                                              <span class="co">#(6)</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co"># backprop xpysqr = xpy**2</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>dxpy <span class="op">=</span> (<span class="dv">2</span> <span class="op">*</span> xpy) <span class="op">*</span> dxpysqr                                        <span class="co">#(5)</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co"># backprop xpy = x + y</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>dx <span class="op">=</span> (<span class="dv">1</span>) <span class="op">*</span> dxpy                                                   <span class="co">#(4)</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>dy <span class="op">=</span> (<span class="dv">1</span>) <span class="op">*</span> dxpy                                                   <span class="co">#(4)</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="co"># backprop sigx = 1.0 / (1 + math.exp(-x))</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>dx <span class="op">+=</span> ((<span class="dv">1</span> <span class="op">-</span> sigx) <span class="op">*</span> sigx) <span class="op">*</span> dsigx <span class="co"># Notice += !! See notes below  #(3)</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="co"># backprop num = x + sigy</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>dx <span class="op">+=</span> (<span class="dv">1</span>) <span class="op">*</span> dnum                                                  <span class="co">#(2)</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>dsigy <span class="op">=</span> (<span class="dv">1</span>) <span class="op">*</span> dnum                                                <span class="co">#(2)</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="co"># backprop sigy = 1.0 / (1 + math.exp(-y))</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>dy <span class="op">+=</span> ((<span class="dv">1</span> <span class="op">-</span> sigy) <span class="op">*</span> sigy) <span class="op">*</span> dsigy                                 <span class="co">#(1)</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="co"># done! phew</span></span></code></pre></div>
+<p>Notice a few things:</p>
+<p><strong>Cache forward pass variables</strong>. To compute the
+backward pass it is very helpful to have some of the variables that were
+used in the forward pass. In practice you want to structure your code so
+that you cache these variables, and so that they are available during
+backpropagation. If this is too difficult, it is possible (but wasteful)
+to recompute them.</p>
+<p><strong>Gradients add up at forks</strong>. The forward expression
+involves the variables <strong>x,y</strong> multiple times, so when we
+perform backpropagation we must be careful to use <code>+=</code>
+instead of <code>=</code> to accumulate the gradient on these variables
+(otherwise we would overwrite it). This follows the <em>multivariable
+chain rule</em> in Calculus, which states that if a variable branches
+out to different parts of the circuit, then the gradients that flow back
+to it will add.</p>
+<p><a name='patterns'></a></p>
+<h3 id="patterns-in-backward-flow">Patterns in backward flow</h3>
+<p>It is interesting to note that in many cases the backward-flowing
+gradient can be interpreted on an intuitive level. For example, the
+three most commonly used gates in neural networks
+(<em>add,mul,max</em>), all have very simple interpretations in terms of
+how they act during backpropagation. Consider this example circuit:</p>
+<div class="fig figleft fighighlight">
+<svg style="max-width: 460px" viewbox="0 0 460 290">
+<g transform="scale(1)"><defs><marker id="arrowhead" refX="6" refY="2" markerWidth="6" markerHeight="4" orient="auto"><path d="M 0,0 V 4 L6,2 Z"></path></marker></defs><line x1="50" y1="30" x2="90" y2="30" stroke="black" stroke-width="1"></line><text x="55" y="24" font-size="16" fill="green">3.00</text><text x="55" y="47" font-size="16" fill="red">-8.00</text><text x="45" y="24" font-size="16" text-anchor="end" fill="black">x</text><line x1="50" y1="100" x2="90" y2="100" stroke="black" stroke-width="1"></line><text x="55" y="94" font-size="16" fill="green">-4.00</text><text x="55" y="117" font-size="16" fill="red">6.00</text><text x="45" y="94" font-size="16" text-anchor="end" fill="black">y</text><line x1="50" y1="170" x2="90" y2="170" stroke="black" stroke-width="1"></line><text x="55" y="164" font-size="16" fill="green">2.00</text><text x="55" y="187" font-size="16" fill="red">2.00</text><text x="45" y="164" font-size="16" text-anchor="end" fill="black">z</text><line x1="50" y1="240" x2="90" y2="240" stroke="black" stroke-width="1"></line><text x="55" y="234" font-size="16" fill="green">-1.00</text><text x="55" y="257" font-size="16" fill="red">0.00</text><text x="45" y="234" font-size="16" text-anchor="end" fill="black">w</text><line x1="170" y1="65" x2="210" y2="65" stroke="black" stroke-width="1"></line><text x="175" y="59" font-size="16" fill="green">-12.00</text><text x="175" y="82" font-size="16" fill="red">2.00</text><circle cx="130" cy="65" fill="white" stroke="black" stroke-width="1" r="20"></circle><text x="130" y="75" font-size="20" fill="black" text-anchor="middle"><em></text><line x1="90" y1="30" x2="110" y2="65" stroke="black" stroke-width="1" marker-end="url(#arrowhead)"></line><line x1="90" y1="100" x2="110" y2="65" stroke="black" stroke-width="1" marker-end="url(#arrowhead)"></line><line x1="150" y1="65" x2="170" y2="65" stroke="black" stroke-width="1" marker-end="url(#arrowhead)"></line><line x1="170" y1="205" x2="210" y2="205" stroke="black" stroke-width="1"></line><text x="175" y="199" font-size="16" fill="green">2.00</text><text x="175" y="222" font-size="16" fill="red">2.00</text><circle cx="130" cy="205" fill="white" stroke="black" stroke-width="1" r="20"></circle><text x="130" y="210" font-size="20" fill="black" text-anchor="middle">max</text><line x1="90" y1="170" x2="110" y2="205" stroke="black" stroke-width="1" marker-end="url(#arrowhead)"></line><line x1="90" y1="240" x2="110" y2="205" stroke="black" stroke-width="1" marker-end="url(#arrowhead)"></line><line x1="150" y1="205" x2="170" y2="205" stroke="black" stroke-width="1" marker-end="url(#arrowhead)"></line><line x1="290" y1="135" x2="330" y2="135" stroke="black" stroke-width="1"></line><text x="295" y="129" font-size="16" fill="green">-10.00</text><text x="295" y="152" font-size="16" fill="red">2.00</text><circle cx="250" cy="135" fill="white" stroke="black" stroke-width="1" r="20"></circle><text x="250" y="140" font-size="20" fill="black" text-anchor="middle">+</text><line x1="210" y1="65" x2="230" y2="135" stroke="black" stroke-width="1" marker-end="url(#arrowhead)"></line><line x1="210" y1="205" x2="230" y2="135" stroke="black" stroke-width="1" marker-end="url(#arrowhead)"></line><line x1="270" y1="135" x2="290" y2="135" stroke="black" stroke-width="1" marker-end="url(#arrowhead)"></line><line x1="410" y1="135" x2="450" y2="135" stroke="black" stroke-width="1"></line><text x="415" y="129" font-size="16" fill="green">-20.00</text><text x="415" y="152" font-size="16" fill="red">1.00</text><circle cx="370" cy="135" fill="white" stroke="black" stroke-width="1" r="20"></circle><text x="370" y="140" font-size="20" fill="black" text-anchor="middle"></em>2</text><line x1="330" y1="135" x2="350" y2="135" stroke="black" stroke-width="1" marker-end="url(#arrowhead)"></line><line x1="390" y1="135" x2="410" y2="135" stroke="black" stroke-width="1" marker-end="url(#arrowhead)"></line></g>
+</svg>
+<div class="figcaption">
+<p>An example circuit demonstrating the intuition behind the operations
+that backpropagation performs during the backward pass in order to
+compute the gradients on the inputs. Sum operation distributes gradients
+equally to all its inputs. Max operation routes the gradient to the
+higher input. Multiply gate takes the input activations, swaps them and
+multiplies by its gradient.</p>
+</div>
+<div style="clear:both;">
+
+</div>
+</div>
+<p>Looking at the diagram above as an example, we can see that:</p>
+<p>The <strong>add gate</strong> always takes the gradient on its output
+and distributes it equally to all of its inputs, regardless of what
+their values were during the forward pass. This follows from the fact
+that the local gradient for the add operation is simply +1.0, so the
+gradients on all inputs will exactly equal the gradients on the output
+because it will be multiplied by x1.0 (and remain unchanged). In the
+example circuit above, note that the + gate routed the gradient of 2.00
+to both of its inputs, equally and unchanged.</p>
+<p>The <strong>max gate</strong> routes the gradient. Unlike the add
+gate which distributed the gradient unchanged to all its inputs, the max
+gate distributes the gradient (unchanged) to exactly one of its inputs
+(the input that had the highest value during the forward pass). This is
+because the local gradient for a max gate is 1.0 for the highest value,
+and 0.0 for all other values. In the example circuit above, the max
+operation routed the gradient of 2.00 to the <strong>z</strong>
+variable, which had a higher value than <strong>w</strong>, and the
+gradient on <strong>w</strong> remains zero.</p>
+<p>The <strong>multiply gate</strong> is a little less easy to
+interpret. Its local gradients are the input values (except switched),
+and this is multiplied by the gradient on its output during the chain
+rule. In the example above, the gradient on <strong>x</strong> is -8.00,
+which is -4.00 x 2.00.</p>
+<p><em>Unintuitive effects and their consequences</em>. Notice that if
+one of the inputs to the multiply gate is very small and the other is
+very big, then the multiply gate will do something slightly unintuitive:
+it will assign a relatively huge gradient to the small input and a tiny
+gradient to the large input. Note that in linear classifiers where the
+weights are dot producted \(w^Tx_i\) (multiplied) with the inputs, this
+implies that the scale of the data has an effect on the magnitude of the
+gradient for the weights. For example, if you multiplied all input data
+examples \(x_i\) by 1000 during preprocessing, then the gradient on the
+weights will be 1000 times larger, and you’d have to lower the learning
+rate by that factor to compensate. This is why preprocessing matters a
+lot, sometimes in subtle ways! And having intuitive understanding for
+how the gradients flow can help you debug some of these cases.</p>
+<p><a name='mat'></a></p>
+<h3 id="gradients-for-vectorized-operations">Gradients for vectorized
+operations</h3>
+<p>The above sections were concerned with single variables, but all
+concepts extend in a straight-forward manner to matrix and vector
+operations. However, one must pay closer attention to dimensions and
+transpose operations.</p>
+<p><strong>Matrix-Matrix multiply gradient</strong>. Possibly the most
+tricky operation is the matrix-matrix multiplication (which generalizes
+all matrix-vector and vector-vector) multiply operations:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># forward pass</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>W <span class="op">=</span> np.random.randn(<span class="dv">5</span>, <span class="dv">10</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> np.random.randn(<span class="dv">10</span>, <span class="dv">3</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>D <span class="op">=</span> W.dot(X)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co"># now suppose we had the gradient on D from above in the circuit</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>dD <span class="op">=</span> np.random.randn(<span class="op">*</span>D.shape) <span class="co"># same shape as D</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>dW <span class="op">=</span> dD.dot(X.T) <span class="co">#.T gives the transpose of the matrix</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>dX <span class="op">=</span> W.T.dot(dD)</span></code></pre></div>
+<p><em>Tip: use dimension analysis!</em> Note that you do not need to
+remember the expressions for <code>dW</code> and <code>dX</code> because
+they are easy to re-derive based on dimensions. For instance, we know
+that the gradient on the weights <code>dW</code> must be of the same
+size as <code>W</code> after it is computed, and that it must depend on
+matrix multiplication of <code>X</code> and <code>dD</code> (as is the
+case when both <code>X,W</code> are single numbers and not matrices).
+There is always exactly one way of achieving this so that the dimensions
+work out. For example, <code>X</code> is of size [10 x 3] and
+<code>dD</code> of size [5 x 3], so if we want <code>dW</code> and
+<code>W</code> has shape [5 x 10], then the only way of achieving this
+is with <code>dD.dot(X.T)</code>, as shown above.</p>
+<p><strong>Work with small, explicit examples</strong>. Some people may
+find it difficult at first to derive the gradient updates for some
+vectorized expressions. Our recommendation is to explicitly write out a
+minimal vectorized example, derive the gradient on paper and then
+generalize the pattern to its efficient, vectorized form.</p>
+<p>Erik Learned-Miller has also written up a longer related document on
+taking matrix/vector derivatives which you might find helpful. <a
+href="http://cs231n.stanford.edu/vecDerivs.pdf">Find it here</a>.</p>
+<p><a name='summary'></a></p>
+<h3 id="summary">Summary</h3>
+<ul>
+<li>We developed intuition for what the gradients mean, how they flow
+backwards in the circuit, and how they communicate which part of the
+circuit should increase or decrease and with what force to make the
+final output higher.</li>
+<li>We discussed the importance of <strong>staged computation</strong>
+for practical implementations of backpropagation. You always want to
+break up your function into modules for which you can easily derive
+local gradients, and then chain them with chain rule. Crucially, you
+almost never want to write out these expressions on paper and
+differentiate them symbolically in full, because you never need an
+explicit mathematical equation for the gradient of the input variables.
+Hence, decompose your expressions into stages such that you can
+differentiate every stage independently (the stages will be matrix
+vector multiplies, or max operations, or sum operations, etc.) and then
+backprop through the variables one step at a time.</li>
+</ul>
+<p>In the next section we will start to define neural networks, and
+backpropagation will allow us to efficiently compute the gradient of a
+loss function with respect to its parameters. In other words, we’re now
+ready to train neural nets, and the most conceptually difficult part of
+this class is behind us! ConvNets will then be a small step away.</p>
+<h3 id="references">References</h3>
+<ul>
+<li><a href="http://arxiv.org/abs/1502.05767">Automatic differentiation
+in machine learning: a survey</a></li>
+</ul>
+</body>
+</html>

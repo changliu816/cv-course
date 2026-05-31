@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>understanding-cnn</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+<p><a name='vis'></a></p>
+<p>(this page is currently in draft form)</p>
+<h2 id="visualizing-what-convnets-learn">Visualizing what ConvNets
+learn</h2>
+<p>Several approaches for understanding and visualizing Convolutional
+Networks have been developed in the literature, partly as a response the
+common criticism that the learned features in a Neural Network are not
+interpretable. In this section we briefly survey some of these
+approaches and related work.</p>
+<h3 id="visualizing-the-activations-and-first-layer-weights">Visualizing
+the activations and first-layer weights</h3>
+<p><strong>Layer Activations</strong>. The most straight-forward
+visualization technique is to show the activations of the network during
+the forward pass. For ReLU networks, the activations usually start out
+looking relatively blobby and dense, but as the training progresses the
+activations usually become more sparse and localized. One dangerous
+pitfall that can be easily noticed with this visualization is that some
+activation maps may be all zero for many different inputs, which can
+indicate <em>dead</em> filters, and can be a symptom of high learning
+rates.</p>
+<div class="fig figcenter fighighlight">
+<img src="assets/cnnvis/act1.jpeg" width="49%">
+<img src="assets/cnnvis/act2.jpeg" width="49%">
+<div class="figcaption">
+<pre><code>Typical-looking activations on the first CONV layer (left), and the 5th CONV layer (right) of a trained AlexNet looking at a picture of a cat. Every box shows an activation map corresponding to some filter. Notice that the activations are sparse (most values are zero, in this visualization shown in black) and mostly local.</code></pre>
+</div>
+</div>
+<p><strong>Conv/FC Filters.</strong> The second common strategy is to
+visualize the weights. These are usually most interpretable on the first
+CONV layer which is looking directly at the raw pixel data, but it is
+possible to also show the filter weights deeper in the network. The
+weights are useful to visualize because well-trained networks usually
+display nice and smooth filters without any noisy patterns. Noisy
+patterns can be an indicator of a network that hasn’t been trained for
+long enough, or possibly a very low regularization strength that may
+have led to overfitting.</p>
+<div class="fig figcenter fighighlight">
+<img src="assets/cnnvis/filt1.jpeg" width="49%">
+<img src="assets/cnnvis/filt2.jpeg" width="49%">
+<div class="figcaption">
+<pre><code>Typical-looking filters on the first CONV layer (left), and the 2nd CONV layer (right) of a trained AlexNet. Notice that the first-layer weights are very nice and smooth, indicating nicely converged network. The color/grayscale features are clustered because the AlexNet contains two separate streams of processing, and an apparent consequence of this architecture is that one stream develops high-frequency grayscale features and the other low-frequency color features. The 2nd CONV layer weights are not as interpretable, but it is apparent that they are still smooth, well-formed, and absent of noisy patterns.</code></pre>
+</div>
+</div>
+<h3 id="retrieving-images-that-maximally-activate-a-neuron">Retrieving
+images that maximally activate a neuron</h3>
+<p>Another visualization technique is to take a large dataset of images,
+feed them through the network and keep track of which images maximally
+activate some neuron. We can then visualize the images to get an
+understanding of what the neuron is looking for in its receptive field.
+One such visualization (among others) is shown in <a
+href="http://arxiv.org/abs/1311.2524">Rich feature hierarchies for
+accurate object detection and semantic segmentation</a> by Ross Girshick
+et al.:</p>
+<div class="fig figcenter fighighlight">
+<img src="assets/cnnvis/pool5max.jpeg" width="100%">
+<div class="figcaption">
+<pre><code>Maximally activating images for some POOL5 (5th pool layer) neurons of an AlexNet. The activation values and the receptive field of the particular neuron are shown in white. (In particular, note that the POOL5 neurons are a function of a relatively large portion of the input image!) It can be seen that some neurons are responsive to upper bodies, text, or specular highlights.</code></pre>
+</div>
+</div>
+<p>One problem with this approach is that ReLU neurons do not
+necessarily have any semantic meaning by themselves. Rather, it is more
+appropriate to think of multiple ReLU neurons as the basis vectors of
+some space that represents in image patches. In other words, the
+visualization is showing the patches at the edge of the cloud of
+representations, along the (arbitrary) axes that correspond to the
+filter weights. This can also be seen by the fact that neurons in a
+ConvNet operate linearly over the input space, so any arbitrary rotation
+of that space is a no-op. This point was further argued in <a
+href="http://arxiv.org/abs/1312.6199">Intriguing properties of neural
+networks</a> by Szegedy et al., where they perform a similar
+visualization along arbitrary directions in the representation
+space.</p>
+<h3 id="embedding-the-codes-with-t-sne">Embedding the codes with
+t-SNE</h3>
+<p>ConvNets can be interpreted as gradually transforming the images into
+a representation in which the classes are separable by a linear
+classifier. We can get a rough idea about the topology of this space by
+embedding images into two dimensions so that their low-dimensional
+representation has approximately equal distances than their
+high-dimensional representation. There are many embedding methods that
+have been developed with the intuition of embedding high-dimensional
+vectors in a low-dimensional space while preserving the pairwise
+distances of the points. Among these, <a
+href="http://lvdmaaten.github.io/tsne/">t-SNE</a> is one of the
+best-known methods that consistently produces visually-pleasing
+results.</p>
+<p>To produce an embedding, we can take a set of images and use the
+ConvNet to extract the CNN codes (e.g. in AlexNet the 4096-dimensional
+vector right before the classifier, and crucially, including the ReLU
+non-linearity). We can then plug these into t-SNE and get 2-dimensional
+vector for each image. The corresponding images can them be visualized
+in a grid:</p>
+<div class="fig figcenter fighighlight">
+<img src="assets/cnnvis/tsne.jpeg" width="100%">
+<div class="figcaption">
+<pre><code>t-SNE embedding of a set of images based on their CNN codes. Images that are nearby each other are also close in the CNN representation space, which implies that the CNN &quot;sees&quot; them as being very similar. Notice that the similarities are more often class-based and semantic rather than pixel and color-based. For more details on how this visualization was produced the associated code, and more related visualizations at different scales refer to &lt;a href=&quot;http://cs.stanford.edu/people/karpathy/cnnembed/&quot;&gt;t-SNE visualization of CNN codes&lt;/a&gt;.</code></pre>
+</div>
+</div>
+<h3 id="occluding-parts-of-the-image">Occluding parts of the image</h3>
+<p>Suppose that a ConvNet classifies an image as a dog. How can we be
+certain that it’s actually picking up on the dog in the image as opposed
+to some contextual cues from the background or some other miscellaneous
+object? One way of investigating which part of the image some
+classification prediction is coming from is by plotting the probability
+of the class of interest (e.g. dog class) as a function of the position
+of an occluder object. That is, we iterate over regions of the image,
+set a patch of the image to be all zero, and look at the probability of
+the class. We can visualize the probability as a 2-dimensional heat map.
+This approach has been used in Matthew Zeiler’s <a
+href="http://arxiv.org/abs/1311.2901">Visualizing and Understanding
+Convolutional Networks</a>:</p>
+<div class="fig figcenter fighighlight">
+<img src="assets/cnnvis/occlude.jpeg" width="100%">
+<div class="figcaption">
+<pre><code>Three input images (top). Notice that the occluder region is shown in grey. As we slide the occluder over the image we record the probability of the correct class and then visualize it as a heatmap (shown below each image). For instance, in the left-most image we see that the probability of Pomeranian plummets when the occluder covers the face of the dog, giving us some level of confidence that the dog&#39;s face is primarily responsible for the high classification score. Conversely, zeroing out other parts of the image is seen to have relatively negligible impact.</code></pre>
+</div>
+</div>
+<h3 id="visualizing-the-data-gradient-and-friends">Visualizing the data
+gradient and friends</h3>
+<p><strong>Data Gradient</strong>.</p>
+<p><a href="http://arxiv.org/abs/1312.6034">Deep Inside Convolutional
+Networks: Visualising Image Classification Models and Saliency
+Maps</a></p>
+<p><strong>DeconvNet</strong>.</p>
+<p><a href="http://arxiv.org/abs/1311.2901">Visualizing and
+Understanding Convolutional Networks</a></p>
+<p><strong>Guided Backpropagation</strong>.</p>
+<p><a href="http://arxiv.org/abs/1412.6806">Striving for Simplicity: The
+All Convolutional Net</a></p>
+<h3
+id="reconstructing-original-images-based-on-cnn-codes">Reconstructing
+original images based on CNN Codes</h3>
+<p><a href="http://arxiv.org/abs/1412.0035">Understanding Deep Image
+Representations by Inverting Them</a></p>
+<h3 id="how-much-spatial-information-is-preserved">How much spatial
+information is preserved?</h3>
+<p><a
+href="http://papers.nips.cc/paper/5420-do-convnets-learn-correspondence.pdf">Do
+ConvNets Learn Correspondence?</a> (tldr: yes)</p>
+<h3 id="plotting-performance-as-a-function-of-image-attributes">Plotting
+performance as a function of image attributes</h3>
+<p><a href="http://arxiv.org/abs/1409.0575">ImageNet Large Scale Visual
+Recognition Challenge</a></p>
+<h2 id="fooling-convnets">Fooling ConvNets</h2>
+<p><a href="http://arxiv.org/abs/1412.6572">Explaining and Harnessing
+Adversarial Examples</a></p>
+<h2 id="comparing-convnets-to-human-labelers">Comparing ConvNets to
+Human labelers</h2>
+<p><a
+href="http://karpathy.github.io/2014/09/02/what-i-learned-from-competing-against-a-convnet-on-imagenet/">What
+I learned from competing against a ConvNet on ImageNet</a></p>
+</body>
+</html>

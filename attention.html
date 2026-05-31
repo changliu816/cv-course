@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>attention</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <script
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"
+  type="text/javascript"></script>
+</head>
+<body>
+<p>Table of Contents:</p>
+<ul>
+<li><a href="#motivation">Motivation</a></li>
+<li><a href="#attention">General Attention Layers</a>
+<ul>
+<li><a href="#operations">Operations</a></li>
+</ul></li>
+<li><a href="#self">Self-Attention</a>
+<ul>
+<li><a href="#masked">Masked Self-Attention Layers</a></li>
+<li><a href="#multihead">Multi-Head Self-Attention Layers</a></li>
+</ul></li>
+<li><a href="#summary">Summary</a></li>
+<li><a href="#resources">Additional References</a></li>
+</ul>
+<h2 id="attention">Attention</h2>
+<p>We discussed fundamental workhorses of modern deep learning such as
+Convolutional Neural Networks and Recurrent Neural Networks in previous
+sections. This section is devoted to yet another layer – the attention
+layer – that forms a new primitive for modern Computer Vision and NLP
+applications.</p>
+<p><a name='motivation'></a></p>
+<h3 id="motivation">Motivation</h3>
+<p>To motivate the attention layer, let us look at a sample application
+– image captioning, and see what’s the problem with using plain CNNs and
+RNNs there.</p>
+<p>The figure below shows a pipeline of applying such networks on a
+given image to generate a caption. It first uses a pre-trained CNN
+feature extractor to summarize the image, resulting in an image feature
+vector \(c = h_0\). It then applies a recurrent network to repeatedly
+generate tokens at each step. After five time steps, the image
+captioning model obtains the sentence: “surfer riding on wave”.</p>
+<div class="fig figcenter fighighlight">
+<p><img src="assets/att/captioning.png" width="80%"></p>
+</div>
+<p>What is the problem here? Notice that the model relies entirely on
+the context vector \(c\) to write the caption – everything it wants to
+say about the image needs to be compressed within this vector. What if
+we want to be very specific, and describe every nitty-gritty detail of
+the image, e.g. color of the surfer’s shirt, facing direction of the
+waves? Obviously, a finite-length vector cannot be used to encode all
+such possibilities, especially if the desired number of tokens goes to
+the magnitude of hundreds or thousands.</p>
+<p>The central idea of the attention layer is borrowed from human’s
+visual attention system: when humans like us are given a visual scene
+and try to understand a specific region of that scene, we focus our
+eyesight on that region. The attention layer simulates this process, and
+<em>attends</em> to different parts of the image while generating words
+to describe it.</p>
+<p>With attention in play, a similar diagram showing the pipeline for
+image captioning is as follows. What’s the main difference? We
+incorporate two additional matrices: one for <em>alignment scores</em>,
+and the other for <em>attention</em>; and have <em>different context
+vectors</em> \(c_i\) at different steps. At each step, the model uses a
+multi-layer perceptron to digest the current hidden vector \(h_i\) and
+the input image features, to generate an alignment score matrix of shape
+\(H W\). This score matrix is then fed into a softmax layer that
+converts it to an attention matrix with weights summing to one. The
+weights in the attention matrix are next multiplied element-wise with
+image features, allowing the model to focus on regions of the image
+differently. This entire process is differentiable and enables the model
+to choose its own attention weights.</p>
+<div class="fig figcenter fighighlight">
+<p><img src="assets/att/captioning-attention.png" width="60%"></p>
+</div>
+<p><a name='attention'></a></p>
+<h3 id="general-attention-layers">General Attention Layers</h3>
+<p>While the previous section details the application of an attention
+layer in image captioning, we next present a more general and principled
+formulation of the attention layer, de-contextualizing it from the image
+captioning and recurrent network settings. In a general setting, the
+attention layer is a layer with input and output vectors, and five major
+operations. These are illustrated in the following diagrams.</p>
+<div class="fig figcenter fighighlight">
+<img src="assets/att/attention.png" width="70%">
+<div class="figcaption">
+Left: A General Attention Layer. Right: A Self-Attention Layer.
+</div>
+</div>
+<p>As illustrated, inputs to an attention layer contain input vectors
+\(X\) and query vectors \(Q\). The input vectors, \(X\), are of shape
+\(N D_x\) while the query vectors \(Q\) are of shape \(M D_k\). In the
+image captioning example, input vectors are the image features while
+query vectors are the hidden states of the recurrent network. Outputs of
+an attention layer are the vectors \(Y\) of shape \(M D_k\), at the
+top.</p>
+<p>The bulk of the attention operations are illustrated as the colorful
+grids in the middle, and contains two major types of operations: linear
+key-value maps; and align &amp; attend operations that we saw earlier in
+the image captioning example.</p>
+<p><a name='operations'></a></p>
+<h4 id="operations">Operations</h4>
+<p><strong>Linear Key and Value Transformations.</strong> These
+operations are linear transformations that convert the input vectors \(
+X\) to two alternative set of vectors:</p>
+<ul>
+<li>Key vectors \(K\): These vectors are obtained by using the linear
+equation \(K = X W_k\) where \(W_k\) is a learnable weight matrix of
+shape \(D_x D_k\), converting from input vector dimension \(D_x\) to key
+dimension \(D_k\). The resulting keys have the same dimension as the
+query vectors, to enable alignment.</li>
+<li>Value vectors \(V\): Similarly, the equation to derive these vectors
+is the linear rule \(V = X W_v\) where \(W_v\) is of shape \(D_x D_v\).
+The value vectors have the same dimension as the output vectors.</li>
+</ul>
+<p>By applying these fully-connected layers on top of the inputs, the
+attention model achieves additional expressivity.</p>
+<p><strong>Alignment.</strong> Core to the attention layer are two
+fundamental operations: alignment, and attention. In the alignment step,
+while more complex functions are possible, practitioners often opt for a
+simple function between vectors: pairwise dot products between key and
+query vectors.</p>
+<p>Moreover, for vectors with a larger dimensionality, more terms are
+multiplied and summed in the dot product and this usually implies a
+larger variance. Vectors with larger magnitude contribute more weights
+to the resulting softmax calculation, and many terms usually receive low
+attention. To deal with this issue, a scaling factor, the reciprocal of
+\(\), is often incorporated to reduce the alignment scores. This scaling
+procedure reduces the effect of large magnitude terms, so that the
+resulting attention weights are more spread-out. The alignment
+computation can be summarized as the following equation:</p>
+<p><span class="math display">\[ e_{i,j} = \frac{q_j \cdot
+x_i}{\sqrt{D_x}} \]</span></p>
+<p><strong>Attention.</strong> The attention matrix is obtained by
+applying the softmax function column-wise to the alignment matrix.</p>
+<p><span class="math display">\[ \mathbf{a} = \text{softmax}(\mathbf{e})
+\]</span></p>
+<p>The output vectors are finally calculated as multiplications of the
+attention matrix and the input vectors:</p>
+<p><span class="math display">\[ y_j = \sum_{i} a_{i,j} x_i
+\]</span></p>
+<p><a name='self'></a></p>
+<h3 id="self-attention">Self-Attention</h3>
+<p>While we explain the general attention layer above, the
+self-attention layer refers to the special case where similar to the key
+and value vectors, the query vectors \(Q\) are also expressed as a
+linear transformation of the input vectors: \(Q = X W_q\) where \(W_q\)
+is of shape \(D_x D_k\). With this expression of query vectors as a
+linear function of the inputs, the attention layer is self-contained.
+This is illustrated on the right of the figure above.</p>
+<p><strong>Permutation Invariance.</strong> It is worth noting that the
+self-attention layer is invariant to the order of the input vectors: if
+we apply a permutation to the input vectors, the outputs will be
+permuted in exactly the same way. This is illustrated in the following
+diagram.</p>
+<div class="fig figcenter fighighlight">
+<img src="assets/att/permutation.png" width="55%">
+<div class="figcaption">
+Permutation Invariance of Self-Attention Layers.
+</div>
+</div>
+<p><strong>Positional Encoding.</strong> While the self-attention layer
+is agnostic to the ordering of inputs, practical applications often
+require some notion of ordering. For example, in natural language
+sequences, the relative ordering of words often plays a pivotal role in
+differentiating the meaning of the entire sentence. This necessitates
+the inclusion of a positional encoding component into the self-attention
+module, to endow the model with the ability to determine the positions
+of its inputs. A number of desiderata are needed for this component:</p>
+<ul>
+<li>The positional encodings should be <em>unique</em> for each time
+step.</li>
+<li>The <em>distance</em> between any two consecutive encodings should
+be the same.</li>
+<li>The positional encoding function should generalize to arbitrarily
+<em>long</em> sequences.</li>
+<li>The function should be <em>deterministic</em>.</li>
+</ul>
+<p>While there exists a number of functions that satisfy the above
+criteria, a commonly used method makes use of mixed sine and cosine
+values. Concretely, the encoding function looks like the following:</p>
+<p><span class="math display">\[ p(t)
+= [\sin(w_1 \cdot t), \cos(w_1 \cdot t), \sin(w_2 \cdot t), \cos(w_2
+\cdot t), \cdots, \sin(w_{d/2} \cdot t), \cos(w_{d/2} \cdot t)]
+\]</span></p>
+<p>where the frequency \(w_k = \). What does this function encode? The
+following diagram is an intuitive explanation of the same phenomenon,
+but in the binary domain:</p>
+<div class="fig figcenter fighighlight">
+<p><img src="assets/att/position-binary.png" width="50%"></p>
+</div>
+<p>The frequencies \(w_k\) are varied, to represent the relative
+positions of the inputs, in a similar vein as the 0s and 1s in the
+binary case. In practice, the positional encoding component concatenates
+additional information to the input vectors, before they are passed to
+the self-attention module:</p>
+<div class="fig figcenter fighighlight">
+<p><img src="assets/att/position.png" width="15%"></p>
+</div>
+<p><strong>A Comparison Between General Attention
+vs. Self-Attention</strong>. The general attention layer has access to
+three sets of vectors: key, value, and query vectors. In comparison, the
+self-attention layer is entirely self-enclosed, and instead
+parameterizes the three sets of vectors as linear functions of the
+inputs.</p>
+<div class="fig figcenter fighighlight">
+<p><img src="assets/att/comparison.png" width="60%"></p>
+</div>
+<p><a name='masked'></a></p>
+<h4 id="masked-self-attention-layers">Masked Self-Attention Layers</h4>
+<p>While the positional encoding layer integrates some positional
+information, in more critical applications, it may be necessary to
+distill into the model a clearer idea of relative input orderings and
+prevent it from <em>looking-ahead</em> at future vectors. To this end,
+the <em>masked</em> self-attention layer is created: it explicitly sets
+the lower-triangular part of the alignment matrix to negative infinity
+values, to ignore the corresponding, future vectors while the model
+processes earlier vectors.</p>
+<div class="fig figcenter fighighlight">
+<p><img src="assets/att/masked.png" width="30%"></p>
+</div>
+<p><a name='multihead'></a></p>
+<h4 id="multi-head-self-attention-layers">Multi-Head Self-Attention
+Layers</h4>
+<p>Yet another possibility to increase the expressivity of the model is
+to exploit the notion of a <em>multi-head</em> attention. Instead of
+using one single self-attention layer, multi-head attention utilizes
+multiple, parallel attention layers. In some cases, to maintain the
+total computation, the key and value dimensions \(D_k, D_v\) may be
+reduced accordingly. The benefit of using multiple attention heads is to
+allow the model to focus on different aspects of the input vectors.</p>
+<div class="fig figcenter fighighlight">
+<p><img src="assets/att/multihead.png" width="60%"></p>
+</div>
+<p><a name='summary'></a></p>
+<h3 id="summary">Summary</h3>
+<p>To summarize this section,</p>
+<ul>
+<li>We motivated and introduced a novel layer popular in deep learning,
+the <strong>attention</strong> layer.</li>
+<li>We introduced it in its general formulation and in particular,
+studied details of the <strong>align and attend</strong>
+operations.</li>
+<li>We then specialized to the case of a <strong>self-attention</strong>
+layer.</li>
+<li>We learned that self-attention layers are
+<strong>permutation-invariant</strong> to the input vectors.</li>
+<li>To retain some positional information, self-attention layers use a
+<strong>positional-encoding</strong> function.</li>
+<li>Moreover, we also studied two extensions of the vanilla
+self-attention layer: the <strong>masked</strong> attention layer, and
+the <strong>multi-head</strong> attention. While the former layer
+prevents the model from looking ahead, the latter serves to increase its
+expressivity.</li>
+</ul>
+<p><a name='resources'></a></p>
+<h3 id="additional-resources">Additional Resources</h3>
+<ul>
+<li><a href="http://proceedings.mlr.press/v37/xuc15.pdf">Show, Attend
+and Tell: Neural Image Caption Generation with Visual Attention</a>
+presents an application of the attention layer to image captioning.</li>
+<li><a href="https://arxiv.org/pdf/1803.09797.pdf">Women also Snowboard:
+Overcoming Bias in Captioning Models</a> exploits the attention layer to
+detect gender bias in image captioning models.</li>
+<li><a href="https://arxiv.org/pdf/1409.0473.pdf">Neural Machine
+Translation by Jointly Learning to Align and Translate</a> applies
+attention to natural language translation.</li>
+<li><a href="https://arxiv.org/pdf/1706.03762.pdf">Attention is All You
+Need</a> is the seminal paper on attention-based Transformers, that took
+the Vision and NLP communities by storm.</li>
+</ul>
+</body>
+</html>

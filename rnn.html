@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>rnn</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <script
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"
+  type="text/javascript"></script>
+</head>
+<body>
+<p>Table of Contents:</p>
+<ul>
+<li><a href="#intro">Introduction to RNN</a></li>
+<li><a href="#char">RNN example as Character-level language
+model</a></li>
+<li><a href="#multi">Multilayer RNNs</a></li>
+<li><a href="#lstm">Long-Short Term Memory (LSTM)</a></li>
+</ul>
+<p><a name='intro'></a></p>
+<h2 id="introduction-to-rnn">Introduction to RNN</h2>
+<p>In this lecture note, we’re going to be talking about the Recurrent
+Neural Networks (RNNs). One great thing about the RNNs is that they
+offer a lot of flexibility on how we wire up the neural network
+architecture. Normally when we’re working with neural networks (Figure
+1), we are given a fixed sized input vector (red), then we process it
+with some hidden layers (green), and we produce a fixed sized output
+vector (blue) as depicted in the leftmost model (“Vanilla” Neural
+Networks) in Figure 1. While <strong>“Vanilla” Neural Networks</strong>
+receive a single input and produce one label for that image, there are
+tasks where the model produce a sequence of outputs as shown in the
+one-to-many model in Figure 1. <strong>Recurrent Neural
+Networks</strong> allow us to operate over sequences of input, output,
+or both at the same time. * An example of <strong>one-to-many</strong>
+model is image captioning where we are given a fixed sized image and
+produce a sequence of words that describe the content of that image
+through RNN (second model in Figure 1). * An example of
+<strong>many-to-one</strong> task is action prediction where we look at
+a sequence of video frames instead of a single image and produce a label
+of what action was happening in the video as shown in the third model in
+Figure 1. Another example of many-to-one task is sentiment
+classification in NLP where we are given a sequence of words of a
+sentence and then classify what sentiment (e.g. positive or negative)
+that sentence is. * An example of <strong>many-to-many</strong> task is
+video-captioning where the input is a sequence of video frames and the
+output is caption that describes what was in the video as shown in the
+fourth model in Figure 1. Another example of many-to-many task is
+machine translation in NLP, where we can have an RNN that takes a
+sequence of words of a sentence in English, and then this RNN is asked
+to produce a sequence of words of a sentence in French. * There is a
+also a <strong>variation of many-to-many</strong> task as shown in the
+last model in Figure 1, where the model generates an output at every
+timestep. An example of this many-to-many task is video classification
+on a frame level where the model classifies every single frame of video
+with some number of classes. We should note that we don’t want this
+prediction to only be a function of the current timestep (current frame
+of the video), but also all the timesteps (frames) that have come before
+this video.</p>
+<p>In general, RNNs allow us to wire up an architecture, where the
+prediction at every single timestep is a function of all the timesteps
+that have come before.</p>
+<div class="fig figcenter fighighlight">
+<img src="assets/rnn/types.png" width="100%">
+<div class="figcaption">
+<b> Figure 1.</b> Different (non-exhaustive) types of Recurrent Neural
+Network architectures. Red boxes are input vectors. Green boxes are
+hidden layers. Blue boxes are output vectors.
+</div>
+</div>
+<h3 id="why-are-existing-convnets-insufficient">Why are existing
+convnets insufficient?</h3>
+<p>The existing convnets are insufficient to deal with tasks that have
+inputs and outputs with variable sequence lengths. In the example of
+video captioning, inputs have variable number of frames (e.g. 10-minute
+and 10-hour long video) and outputs are captions of variable length.
+Convnets can only take in inputs with a fixed size of width and height
+and cannot generalize over inputs with different sizes. In order to
+tackle this problem, we introduce Recurrent Neural Networks (RNNs).</p>
+<h3 id="recurrent-neural-network">Recurrent Neural Network</h3>
+<p>RNN is basically a blackbox (Left of Figure 2), where it has an
+“internal state” that is updated as a sequence is processed. At every
+single timestep, we feed in an input vector into RNN where it modifies
+that state as a function of what it receives. When we tune RNN weights,
+RNN will show different behaviors in terms of how its state evolves as
+it receives these inputs. We are also interested in producing an output
+based on the RNN state, so we can produce these output vectors on top of
+the RNN (as depicted in Figure 2).</p>
+<p>If we unroll an RNN model (Right of Figure 2), then there are inputs
+(e.g. video frame) at different timesteps shown as <span
+class="math display">\[x_1, x_2, x_3\]</span> … <span
+class="math display">\[x_t\]</span>. RNN at each timestep takes in two
+inputs – an input frame (<span class="math display">\[x_i\]</span>) and
+previous representation of what it seems so far (i.e. history) – to
+generate an output <span class="math display">\[y_i\]</span> and update
+its history, which will get forward propagated over time. All the RNN
+blocks in Figure 2 (Right) are the same block that share the same
+parameter, but have different inputs and history at each timestep.</p>
+<div class="fig figcenter fighighlight">
+<img src="assets/rnn/rnn_blackbox.png" width="16%" >
+<img src="assets/rnn/unrolledRNN.png" width="60%" >
+<div class="figcaption">
+<b>Figure 2. </b>Simplified RNN box (Left) and Unrolled RNN (Right).
+</div>
+</div>
+<p>More precisely, RNN can be represented as a recurrence formula of
+some function <span class="math display">\[f_W\]</span> with parameters
+<span class="math display">\[W\]</span>:</p>
+<p><span class="math display">\[
+h_t = f_W(h_{t-1}, x_t)
+\]</span></p>
+<p>where at every timestep it receives some previous state as a vector
+<span class="math display">\[h_{t-1}\]</span> of previous iteration
+timestep <span class="math display">\[t-1\]</span> and current input
+vector <span class="math display">\[x_t\]</span> to produce the current
+state as a vector <span class="math display">\[h_t\]</span>. A fixed
+function <span class="math display">\[f_W\]</span> with weights <span
+class="math display">\[W\]</span> is applied at every single timestep
+and that allows us to use the Recurrent Neural Network on sequences
+without having to commit to the size of the sequence because we apply
+the exact same function at every single timestep, no matter how long the
+input or output sequences are.</p>
+<p>In the most simplest form of RNN, which we call a Vanilla RNN, the
+network is just a single hidden state <span
+class="math display">\[h\]</span> where we use a recurrence formula that
+basically tells us how we should update our hidden state <span
+class="math display">\[h\]</span> as a function of previous hidden state
+<span class="math display">\[h_{t-1}\]</span> and the current input
+<span class="math display">\[x_t\]</span>. In particular, we’re going to
+have weight matrices <span class="math display">\[W_{hh}\]</span> and
+<span class="math display">\[W_{xh}\]</span>, where they will project
+both the hidden state <span class="math display">\[h_{t-1}\]</span> from
+the previous timestep and the current input <span
+class="math display">\[x_t\]</span>, and then those are going to be
+summed and squished with <span class="math display">\[tanh\]</span>
+function to update the hidden state <span
+class="math display">\[h_t\]</span> at timestep <span
+class="math display">\[t\]</span>. This recurrence is telling us how
+<span class="math display">\[h\]</span> will change as a function of its
+history and also the current input at this timestep:</p>
+<p><span class="math display">\[
+h_t = tanh(W_{hh}h_{t-1} + W_{xh}x_t)
+\]</span></p>
+<div class="fig figcenter">
+<p><img src="assets/rnn/vanilla_rnn_mformula_1.png" width="80%" ></p>
+</div>
+<p>We can base predictions on top of <span
+class="math display">\[h_t\]</span> by using just another matrix
+projection on top of the hidden state. This is the simplest complete
+case in which you can wire up a neural network:</p>
+<p><span class="math display">\[
+y_t = W_{hy}h_t
+\]</span></p>
+<div class="fig figcenter">
+<p><img src="assets/rnn/vanilla_rnn_mformula_2.png" width="40%" ></p>
+</div>
+<p>So far we have showed RNN in terms of abstract vectors <span
+class="math display">\[x, h, y\]</span>, however we can endow these
+vectors with semantics in the following section.</p>
+<p><a name='char'></a></p>
+<h2 id="rnn-example-as-character-level-language-model">RNN example as
+Character-level language model</h2>
+<p>One of the simplest ways in which we can use an RNN is in the case of
+a character-level language model since it’s intuitive to understand. The
+way this RNN will work is we will feed a sequence of characters into the
+RNN and at every single timestep, we will ask the RNN to predict the
+next character in the sequence. The prediction of RNN will be in the
+form of score distribution of the characters in the vocabulary for what
+RNN thinks should come next in the sequence that it has seen so far.</p>
+<p>So suppose, in a very simple example (Figure 3), we have the training
+sequence of just one string <span
+class="math display">\[\text{&quot;hello&quot;}\]</span>, and we have a
+vocabulary <span class="math display">\[V \in \{\text{&quot;h&quot;},
+\text{&quot;e&quot;}, \text{&quot;l&quot;},
+\text{&quot;o&quot;}\}\]</span> of 4 characters in the entire dataset.
+We are going to try to get an RNN to learn to predict the next character
+in the sequence on this training data.</p>
+<div class="fig figcenter fighighlight">
+<img src="assets/rnn/char_level_language_model.png" width="60%" >
+<div class="figcaption">
+Figure 3. Simplified Character-level Language Model RNN.
+</div>
+</div>
+<p>As shown in Figure 3, we’ll feed in one character at a time into an
+RNN, first <span class="math display">\[\text{&quot;h&quot;}\]</span>,
+then <span class="math display">\[\text{&quot;e&quot;}\]</span>, then
+<span class="math display">\[\text{&quot;l&quot;}\]</span>, and finally
+<span class="math display">\[\text{&quot;l&quot;}\]</span>. All
+characters are encoded in the representation of what’s called a one-hot
+vector, where only one unique bit of the vector is turned on for each
+unique character in the vocabulary. For example:</p>
+<p><span class="math display">\[
+\begin{bmatrix}1 \\ 0 \\ 0 \\ 0 \end{bmatrix} = \text{&quot;h&quot;}\ \
+\begin{bmatrix}0 \\ 1 \\ 0 \\ 0 \end{bmatrix} = \text{&quot;e&quot;}\ \
+\begin{bmatrix}0 \\ 0 \\ 1 \\ 0 \end{bmatrix} = \text{&quot;l&quot;}\ \
+\begin{bmatrix}0 \\ 0 \\ 0 \\ 1 \end{bmatrix} = \text{&quot;o&quot;}
+\]</span></p>
+<p>Then we’re going to use the recurrence formula from the previous
+section at every single timestep. Suppose we start off with <span
+class="math display">\[h\]</span> as a vector of size 3 with all zeros.
+By using this fixed recurrence formula, we’re going to end up with a
+3-dimensional representation of the next hidden state <span
+class="math display">\[h\]</span> that basically at any point in time
+summarizes all the characters that have come until then:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\begin{bmatrix}0.3 \\ -0.1 \\ 0.9 \end{bmatrix} &amp;=
+f_W(W_{hh}\begin{bmatrix}0 \\ 0 \\ 0 \end{bmatrix} +
+W_{xh}\begin{bmatrix}1 \\ 0 \\ 0 \\ 0 \end{bmatrix}) \ \ \ \ &amp;(1) \\
+\begin{bmatrix}1.0 \\ 0.3 \\ 0.1 \end{bmatrix} &amp;=
+f_W(W_{hh}\begin{bmatrix}0.3 \\ -0.1 \\ 0.9 \end{bmatrix} +
+W_{xh}\begin{bmatrix}0 \\ 1 \\ 0 \\ 0 \end{bmatrix}) \ \ \ \ &amp;(2) \\
+\begin{bmatrix}0.1 \\ -0.5 \\ -0.3 \end{bmatrix} &amp;=
+f_W(W_{hh}\begin{bmatrix}1.0 \\ 0.3 \\ 0.1 \end{bmatrix} +
+W_{xh}\begin{bmatrix}0 \\ 0 \\ 1 \\ 0 \end{bmatrix}) \ \ \ \ &amp;(3) \\
+\begin{bmatrix}-0.3 \\ 0.9 \\ 0.7 \end{bmatrix} &amp;=
+f_W(W_{hh}\begin{bmatrix}0.1 \\ -0.5 \\ -0.3 \end{bmatrix} +
+W_{xh}\begin{bmatrix}0 \\ 0 \\ 1 \\ 0 \end{bmatrix}) \ \ \ \ &amp;(4)
+\end{aligned}
+\]</span></p>
+<p>As we apply this recurrence at every timestep, we’re going to predict
+what should be the next character in the sequence at every timestep.
+Since we have four characters in vocabulary <span
+class="math display">\[V\]</span>, we’re going to predict 4-dimensional
+vector of logits at every single timestep.</p>
+<p>As shown in Figure 3, in the very first timestep we fed in <span
+class="math display">\[\text{&quot;h&quot;}\]</span>, and the RNN with
+its current setting of weights computed a vector of logits:</p>
+<p><span class="math display">\[
+\begin{bmatrix}1.0 \\ 2.2 \\ -3.0 \\ 4.1 \end{bmatrix} \rightarrow
+\begin{bmatrix}\text{&quot;h&quot;} \\ \text{&quot;e&quot;} \\
+\text{&quot;l&quot;}\\ \text{&quot;o&quot;} \end{bmatrix}
+\]</span></p>
+<p>where RNN thinks that the next character <span
+class="math display">\[\text{&quot;h&quot;}\]</span> is <span
+class="math display">\[1.0\]</span> likely to come next, <span
+class="math display">\[\text{&quot;e&quot;}\]</span> is <span
+class="math display">\[2.2\]</span> likely, <span
+class="math display">\[\text{&quot;e&quot;}\]</span> is <span
+class="math display">\[-3.0\]</span> likely, and <span
+class="math display">\[\text{&quot;o&quot;}\]</span> is <span
+class="math display">\[4.1\]</span> likely to come next. In this case,
+RNN incorrectly suggests that <span
+class="math display">\[\text{&quot;o&quot;}\]</span> should come next,
+as the score of <span class="math display">\[4.1\]</span> is the
+highest. However, of course, we know that in this training sequence
+<span class="math display">\[\text{&quot;e&quot;}\]</span> should follow
+<span class="math display">\[\text{&quot;h&quot;}\]</span>, so in fact
+the score of <span class="math display">\[2.2\]</span> is the correct
+answer as it’s highlighted in green in Figure 3, and we want that to be
+high and all other scores to be low. At every single timestep we have a
+target for what next character should come in the sequence, therefore
+the error signal is backpropagated as a gradient of the loss function
+through the connections. As a loss function we could choose to have a
+softmax classifier, for example, so we just get all those losses flowing
+down from the top backwards to calculate the gradients on all the weight
+matrices to figure out how to shift the matrices so that the correct
+probabilities are coming out of the RNN. Similarly we can imagine how to
+scale up the training of the model over larger training dataset.</p>
+<p><a name='multi'></a></p>
+<h2 id="multilayer-rnns">Multilayer RNNs</h2>
+<p>So far we have only shown RNNs with just one layer. However, we’re
+not limited to only a single layer architectures. One of the ways, RNNs
+are used today is in more complex manner. RNNs can be stacked together
+in multiple layers, which gives more depth, and empirically deeper
+architectures tend to work better (Figure 4).</p>
+<div class="fig figcenter fighighlight">
+<img src="assets/rnn/multilayer_rnn.png" width="40%" >
+<div class="figcaption">
+Figure 4. Multilayer RNN example.
+</div>
+</div>
+<p>For example, in Figure 4, there are three separate RNNs each with
+their own set of weights. Three RNNs are stacked on top of each other,
+so the input of the second RNN (second RNN layer in Figure 4) is the
+vector of the hidden state vector of the first RNN (first RNN layer in
+Figure 4). All stacked RNNs are trained jointly, and the diagram in
+Figure 4 represents one computational graph.</p>
+<p><a name='lstm'></a></p>
+<h2 id="long-short-term-memory-lstm">Long-Short Term Memory (LSTM)</h2>
+<p>So far we have seen only a simple recurrence formula for the Vanilla
+RNN. In practice, we actually will rarely ever use Vanilla RNN formula.
+Instead, we will use what we call a Long-Short Term Memory (LSTM)
+RNN.</p>
+<h3 id="vanilla-rnn-gradient-flow-vanishing-gradient-problem">Vanilla
+RNN Gradient Flow &amp; Vanishing Gradient Problem</h3>
+<p>An RNN block takes in input <span class="math display">\[x_t\]</span>
+and previous hidden representation <span
+class="math display">\[h_{t-1}\]</span> and learn a transformation,
+which is then passed through tanh to produce the hidden representation
+<span class="math display">\[h_{t}\]</span> for the next time step and
+output <span class="math display">\[y_{t}\]</span> as shown in the
+equation below.</p>
+<p><span class="math display">\[ h_t = tanh(W_{hh}h_{t-1} + W_{xh}x_t)
+\]</span></p>
+<p>For the back propagation, Let’s examine how the output at the very
+last timestep affects the weights at the very first time step. The
+partial derivative of <span class="math display">\[h_t\]</span> with
+respect to <span class="math display">\[h_{t-1}\]</span> is written as:
+<span class="math display">\[ \frac{\partial h_t}{\partial h_{t-1}}
+=  tanh^{&#39;}(W_{hh}h_{t-1} + W_{xh}x_t)W_{hh} \]</span></p>
+<p>We update the weights <span class="math display">\[W_{hh}\]</span> by
+getting the derivative of the loss at the very last time step <span
+class="math display">\[L_{t}\]</span> with respect to <span
+class="math display">\[W_{hh}\]</span>.</p>
+<p><span class="math display">\[
+\begin{aligned}
+\frac{\partial L_{t}}{\partial W_{hh}} = \frac{\partial L_{t}}{\partial
+h_{t}} \frac{\partial h_{t}}{\partial h_{t-1} } \dots \frac{\partial
+h_{1}}{\partial W_{hh}} \\
+= \frac{\partial L_{t}}{\partial h_{t}}(\prod_{t=2}^{T} \frac{\partial
+h_{t}}{\partial  h_{t-1}})\frac{\partial h_{1}}{\partial W_{hh}} \\
+= \frac{\partial L_{t}}{\partial
+h_{t}}(\prod_{t=2}^{T}  tanh^{&#39;}(W_{hh}h_{t-1} +
+W_{xh}x_t)W_{hh}^{T-1})\frac{\partial h_{1}}{\partial W_{hh}} \\
+\end{aligned}
+\]</span></p>
+<ul>
+<li><p><strong>Vanishing gradient:</strong> We see that <span
+class="math display">\[tanh^{&#39;}(W_{hh}h_{t-1} + W_{xh}x_t)\]</span>
+will almost always be less than 1 because tanh is always between
+negative one and one. Thus, as <span class="math display">\[t\]</span>
+gets larger (i.e. longer timesteps), the gradient (<span
+class="math display">\[\frac{\partial L_{t}}{\partial W} \]</span>) will
+descrease in value and get close to zero. This will lead to vanishing
+gradient problem, where gradients at future time steps rarely impact
+gradients at the very first time step. This is problematic when we model
+long sequence of inputs because the updates will be extremely
+slow.</p></li>
+<li><p><strong>Removing non-linearity (tanh):</strong> If we remove
+non-linearity (tanh) to solve the vanishing gradient problem, then we
+will be left with<br />
+<span class="math display">\[
+\begin{aligned}
+\frac{\partial L_{t}}{\partial W} = \frac{\partial L_{t}}{\partial
+h_{t}}(\prod_{t=2}^{T} W_{hh}^{T-1})\frac{\partial h_{1}}{\partial W}
+\end{aligned}
+\]</span></p>
+<ul>
+<li>Exploding gradients: If the largest singular value of W_{hh} is
+greater than 1, then the gradients will blow up and the model will get
+very large gradients coming back from future time steps. Exploding
+gradient often leads to getting gradients that are NaNs.</li>
+<li>Vanishing gradients: If the laregest singular value of W_{hh} is
+smaller than 1, then we will have vanishing gradient problem as
+mentioned above which will significantly slow down learning.</li>
+</ul></li>
+</ul>
+<p>In practice, we can treat the exploding gradient problem through
+gradient clipping, which is clipping large gradient values to a maximum
+threshold. However, since vanishing gradient problem still exists in
+cases where largest singular value of W_{hh} matrix is less than one,
+LSTM was designed to avoid this problem.</p>
+<h3 id="lstm-formulation">LSTM Formulation</h3>
+<p>The following is the precise formulation for LSTM. On step <span
+class="math display">\[t\]</span>, there is a hidden state <span
+class="math display">\[h_t\]</span> and a cell state <span
+class="math display">\[c_t\]</span>. Both <span
+class="math display">\[h_t\]</span> and <span
+class="math display">\[c_t\]</span> are vectors of size <span
+class="math display">\[n\]</span>. One distinction of LSTM from Vanilla
+RNN is that LSTM has this additional <span
+class="math display">\[c_t\]</span> cell state, and intuitively it can
+be thought of as <span class="math display">\[c_t\]</span> stores
+long-term information. LSTM can read, erase, and write information to
+and from this <span class="math display">\[c_t\]</span> cell. The way
+LSTM alters <span class="math display">\[c_t\]</span> cell is through
+three special gates: <span class="math display">\[i, f, o\]</span> which
+correspond to “input”, “forget”, and “output” gates. The values of these
+gates vary from closed (0) to open (1). All <span
+class="math display">\[i, f, o\]</span> gates are vectors of size <span
+class="math display">\[n\]</span>.</p>
+<p>At every timestep we have an input vector <span
+class="math display">\[x_t\]</span>, previous hidden state <span
+class="math display">\[h_{t-1}\]</span>, previous cell state <span
+class="math display">\[c_{t-1}\]</span>, and LSTM computes the next
+hidden state <span class="math display">\[h_t\]</span>, and next cell
+state <span class="math display">\[c_t\]</span> at timestep <span
+class="math display">\[t\]</span> as follows:</p>
+<p><span class="math display">\[
+\begin{aligned}
+f_t &amp;= \sigma(W_{hf}h_{t_1} + W_{xf}x_t) \\
+i_t &amp;= \sigma(W_{hi}h_{t_1} + W_{xi}x_t) \\
+o_t &amp;= \sigma(W_{ho}h_{t_1} + W_{xo}x_t) \\
+g_t &amp;= \text{tanh}(W_{hg}h_{t_1} + W_{xg}x_t) \\
+\end{aligned}
+\]</span></p>
+<div class="fig figcenter">
+<p><img src="assets/rnn/lstm_mformula_1.png" width="50%" ></p>
+</div>
+<p><span class="math display">\[
+\begin{aligned}
+c_t &amp;= f_t \odot c_{t-1} + i_t \odot g_t \\
+h_t &amp;= o_t \odot \text{tanh}(c_t) \\
+\end{aligned}
+\]</span></p>
+<div class="fig figcenter">
+<p><img src="assets/rnn/lstm_mformula_2.png" width="40%" ></p>
+</div>
+<p>where <span class="math display">\[\odot\]</span> is an element-wise
+Hadamard product. <span class="math display">\[g_t\]</span> in the above
+formulas is an intermediary calculation cache that’s later used with
+<span class="math display">\[o\]</span> gate in the above formulas.</p>
+<p>Since all <span class="math display">\[f, i, o\]</span> gate vector
+values range from 0 to 1, because they were squashed by sigmoid function
+<span class="math display">\[\sigma\]</span>, when multiplied
+element-wise, we can see that:</p>
+<ul>
+<li><strong>Forget Gate:</strong> Forget gate <span
+class="math display">\[f_t\]</span> at time step <span
+class="math display">\[t\]</span> controls how much information needs to
+be “removed” from the previous cell state <span
+class="math display">\[c_{t-1}\]</span>. This forget gate learns to
+erase hidden representations from the previous time steps, which is why
+LSTM will have two hidden represtnations <span
+class="math display">\[h_t\]</span> and cell state <span
+class="math display">\[c_t\]</span>. This <span
+class="math display">\[c_t\]</span> will get propagated over time and
+learn whether to forget the previous cell state or not.</li>
+<li><strong>Input Gate:</strong> Input gate <span
+class="math display">\[i_t\]</span> at time step <span
+class="math display">\[t\]</span> controls how much information needs to
+be “added” to the next cell state <span
+class="math display">\[c_t\]</span> from previous hidden state <span
+class="math display">\[h_{t-1}\]</span> and input <span
+class="math display">\[x_t\]</span>. Instead of tanh, the “input” gate
+<span class="math display">\[i\]</span> has a sigmoid function, which
+converts inputs to values between zero and one. This serves as a switch,
+where values are either almost always zero or almost always one. This
+“input” gate decides whether to take the RNN output that is produced by
+the “gate” gate <span class="math display">\[g\]</span> and multiplies
+the output with input gate <span class="math display">\[i\]</span>.</li>
+<li><strong>Output Gate:</strong> Output gate <span
+class="math display">\[o_t\]</span> at time step <span
+class="math display">\[t\]</span> controls how much information needs to
+be “shown” as output in the current hidden state <span
+class="math display">\[h_t\]</span>.</li>
+</ul>
+<p>The key idea of LSTM is the cell state, the horizontal line running
+through between recurrent timesteps. You can imagine the cell state to
+be some kind of highway of information passing through straight down the
+entire chain, with only some minor linear interactions. With the
+formulation above, it’s easy for information to just flow along this
+highway (Figure 5). Thus, even when there is a bunch of LSTMs stacked
+together, we can get an uninterrupted gradient flow where the gradients
+flow back through cell states instead of hidden states <span
+class="math display">\[h\]</span> without vanishing in every time
+step.</p>
+<p>This greatly fixes the gradient vanishing/exploding problem we have
+outlined above. Figure 5 also shows that gradient contains a vector of
+activations of the “forget” gate. This allows better control of
+gradients values by using suitable parameter updates of the “forget”
+gate.</p>
+<div class="fig figcenter fighighlight">
+<img src="assets/rnn/lstm_highway.png" width="70%" >
+<div class="figcaption">
+Figure 5. LSTM cell state highway.
+</div>
+</div>
+<h3 id="does-lstm-solve-the-vanishing-gradient-problem">Does LSTM solve
+the vanishing gradient problem?</h3>
+<p>LSTM architecture makes it easier for the RNN to preserve information
+over many recurrent time steps. For example, if the forget gate is set
+to 1, and the input gate is set to 0, then the infomation of the cell
+state will always be preserved over many recurrent time steps. For a
+Vanilla RNN, in contrast, it’s much harder to preserve information in
+hidden states in recurrent time steps by just making use of a single
+weight matrix.</p>
+<p>LSTMs do not guarantee that there is no vanishing/exploding gradient
+problems, but it does provide an easier way for the model to learn
+long-distance dependencies.</p>
+</body>
+</html>

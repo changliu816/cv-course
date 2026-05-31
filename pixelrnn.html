@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>pixelrnn</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <script
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"
+  type="text/javascript"></script>
+</head>
+<body>
+<h1 id="pixelrnn">PixelRNN</h1>
+<p>We now give a brief overview of PixelRNN. PixelRNNs belongs to a
+family of explicit density models called <strong>fully visible belief
+networks (FVBN)</strong>. We can represent our model with the following
+equation: <span class="math display">\[p(x) = p(x_1, x_2, \dots,
+x_n),\]</span> where the left hand side <span
+class="math inline">\(p(x)\)</span> represents the likelihood of an
+entire image <span class="math inline">\(x\)</span>, and the right hand
+side represents the joint likelihood of each pixel in the image. Using
+the Chain Rule, we can decompose this likelihood into a product of
+1-dimensional distributions: <span class="math display">\[p(x) =
+\prod_{i = 1}^n p(x_i \mid x_1, \dots, x_{i - 1}).\]</span> Maximizing
+the likelihood of training data, we obtain our models PixelRNN.</p>
+<h1 id="introduction">Introduction</h1>
+<p>PixelRNN, first introduced in van der Oord et al. 2016, uses an
+RNN-like structure, modeling the pixels one-by-one, to maximize the
+likelihood function given above. One of the more difficult tasks in
+generative modeling is to create a model that is tractable, and PixelRNN
+seeks to address that. It does so by tractably modeling a joint
+distribution of the pixels in the image, casting it as a product of
+conditional distributions. The factorization turns the joint modeling
+problem into one that relates to sequences, i.e., we have to predict the
+next pixel given all the previously generated pixels. Thus, we use
+Recurrent Neural Networks for this tasks as they learn sequentially.
+Those same principles apply here; more precisely, we generate image
+pixels starting from the top left corner, and we model each pixel’s
+dependency on previous pixels using an RNN (LSTM).</p>
+<div class="fig figcenter fighighlight">
+<p><img src="assets/pixelrnn.png"></p>
+</div>
+<p>Specifically, the PixelRNN framework is made up of twelve
+two-dimensional LSTM layers, with convolutions applied to each dimension
+of the data. There are two types of layers here. One is the Row LSTM
+layer where the convolution is applied along each row. The second type
+is the Diagonal BiLSTM layer where the convolution is applied to the
+diagonals of the image. In addition, the pixel values are modeled as
+discrete values using a multinomial distribution implemented with a
+softmax layer. This is in contrast to many previous approaches, which
+model pixels as continuous values.</p>
+<h1 id="model">Model</h1>
+<p>The approach of the PixelRNN is as follows. The RNN scans the each
+individual pixel, going row-wise, predicting the conditional
+distribution over the possible pixel values given what context the
+network has. As mentioned before, PixelRNN uses a two-dimensional LSTM
+network which begins scanning at the top left of the image and makesits
+way to the bottom right. One of the reasons an LSTM is used is that it
+can better capture some longer range dependencies between pixels - this
+is essential for understanding image composition. The reason a
+two-dimensional structure is used is to ensure that the signals
+propagate in the left-to-right and top-to-bottom directions well.<br />
+</p>
+<p>The input image to the network is represented by a 1D vector of pixel
+values <span class="math inline">\(\{x_1,..., x_{n^2}\}\)</span> for an
+<span class="math inline">\(n\)</span>-by-<span
+class="math inline">\(n\)</span> sized image, where <span
+class="math inline">\(\{x_1,..., x_{n}\}\)</span> represents the pixels
+from the first row. Our goal is to use these pixel values to find a
+probability distribution <span class="math inline">\(p(X)\)</span> for
+each image <span class="math inline">\(X\)</span>. We define this
+probability as: <span class="math display">\[p(x) = \prod_{i = 1}^{n^2}
+p(x_i \mid x_1, \dots, x_{i - 1}).\]</span></p>
+<p>This is the product of the conditional distributions across all the
+pixels in the image - for pixel <span
+class="math inline">\(x_i\)</span>, we have <span
+class="math inline">\(p(x_i \mid x_1, \dots, x_{i - 1})\)</span>. In
+turn, each of these conditional distributions is determined by three
+values, associated with each of the color channels present in the image
+(red, green and blue). In other words:</p>
+<p><span class="math display">\[p(x_i \mid x_1, \dots, x_{i - 1})
+=  p(x_{i,R} \mid \textbf{x}_{&lt;i}) \cdot p(x_{i,G} \mid
+\textbf{x}_{&lt;i}, x_{i,R}) \cdot p(x_{i,B} \mid \textbf{x}_{&lt;i},
+x_{i,R}, x_{i,G}).\]</span></p>
+<p>In the next section we will see how these distributions are
+calculated and used within the Recurrent Neural Network framework
+proposed in PixelRNN.</p>
+<h2 id="architecture">Architecture</h2>
+<p>As we have seen, there are two distinct components to the
+“two-dimensional” LSTM, the Row LSTM and the Diagonal BiLSTM. Figure 2
+illustrates how each of these two LSTMs operates, when applied to an RGB
+image.</p>
+<div class="fig figcenter fighighlight">
+<p><img src="assets/Screen Shot 2021-06-15 at 9.41.08 AM.png"></p>
+</div>
+<p><strong>Row LSTM</strong> is a unidirectional layer that processes
+the image row by row from top to bottom computing features for a whole
+row at once using a 1D convolution. As we can see in the image above,
+the Row LSTM captures a triangle-shaped context for a given pixel. An
+LSTM layer has an input-to-state component and a recurrent
+state-to-state component that together determine the four gates inside
+the LSTM core. In the Row LSTM, the input-to-state component is computed
+for the whole two-dimensional input map with a one-dimensional
+convolution, row-wise. The output of the convolution is a 4h × n × n
+tensor, where the first dimension represents the four gate vectors for
+each position in the input map (h here is the number of output feature
+maps). Below are the computations for this state-to-state component,
+using the previous hidden state (<span
+class="math inline">\(h_{i-1}\)</span>) and previous cell state (<span
+class="math inline">\(c_{i-1}\)</span>). <span
+class="math display">\[[o_i, f_i, i_i, g_i]  = \sigma(\textbf{K}^{ss}
+\circledast h_{i-1} + \textbf{K}^{is}
+\circledast  \textbf{x}_{i})\]</span> <span
+class="math display">\[c_i  = f_i \odot c_{i-1} + i_i \odot g_i\]</span>
+<span class="math display">\[h_i  = o_i \odot \tanh(c_{i})\]</span></p>
+<p>Here, <span class="math inline">\(\textbf{x}_i\)</span> is the row of
+the input representation and <span
+class="math inline">\(\textbf{K}^{ss}\)</span>, <span
+class="math inline">\(\textbf{K}^{is}\)</span> are the kernel weights
+for state-to-state and input-to-state respectively. <span
+class="math inline">\(g_i, o_i, f_i\)</span> and <span
+class="math inline">\(i_i\)</span> are the content, output, forget and
+input gates. <span class="math inline">\(\sigma\)</span> represents the
+activation function (tanh activation for the content gate, and sigmoid
+for the rest of the gates).<br />
+</p>
+<p><strong>Diagonal BiLSTM</strong> The Diagonal BiLSTM is able to
+capture the entire image context by scanning along both diagonals of the
+image, for each direction of the LSTM. We first compute the
+input-to-state and state-to-state components of the layer. For each of
+the directions, the input-to-state component is simply a 1×1 convolution
+<span class="math inline">\(K^{is}\)</span>, generating a <span
+class="math inline">\(4h × n × n\)</span> tensor (Here again the
+dimension represents the four gate vectors for each position in the
+input map where h is the number of output feature maps). The
+state-to-state is calculated using the <span
+class="math inline">\(K^{ss}\)</span> that has a kernel of size 2 × 1.
+This step takes the previous hidden and cell states, combines the
+contribution of the input-to-state component and produces the next
+hidden and cell states, as explained in the equations for Row LSTM
+above. We repeat this process for each of the two directions.</p>
+<h1 id="performance">Performance</h1>
+<p>When originally presented, the PixelRNN model’s performance was
+tested on some of the most prominent datasets in the computer vision
+space - ImageNet and CIFAR-10. The results in some cases were
+state-of-the-art. On the ImageNet data set, achieved an NLL score of
+3.86 and 3.63 on the the 32x32 and 64x64 image sizes respectively. On
+CiFAR-10, it achievied a NLL score of 3.00, which was state-of-the-art
+at the time of publication.</p>
+<h1 id="references">References</h1>
+<ol type="1">
+<li>CS231n Lecture 11 ‘Generative Modeling’</li>
+<li>Pixel Recurrent Neural Networks (Oord et. al.) 2016</li>
+</ol>
+</body>
+</html>

@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>transformers</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+<p>Table of Contents:</p>
+<ul>
+<li><a href="#overview">Transformers Overview</a></li>
+<li><a href="#why">Why Transformers?</a></li>
+<li><a href="#multihead">Multi-Headed Attention</a></li>
+<li><a href="#tips">Multi-Headed Attention Tips</a></li>
+<li><a href="#steps">Transformer Steps: Encoder-Decoder</a></li>
+</ul>
+<p><a name='overview'></a></p>
+<h3 id="transformer-overview">Transformer Overview</h3>
+<p>In <a href="https://arxiv.org/abs/1706.03762">“Attention Is All You
+Need”</a>, Vaswani et al. introduced the Transformer, which introduces
+parallelism and enables models to learn long-range dependencies–thereby
+helping solve two key issues with RNNs: their slow speed of training and
+their difficulty in encoding long-range dependencies. Transformers are
+highly scalable and highly parallelizable, allowing for faster training,
+larger models, and better performance across vision and language tasks.
+Transformers are beginning to replace RNNs and LSTMs and may soon
+replace convolutions as well.</p>
+<p><a name='why'></a></p>
+<h3 id="why-transformers">Why Transformers?</h3>
+<ul>
+<li>Transformers are great for working with long input sequences since
+the attention calculation looks at all inputs. In contrast, RNNs
+struggle to encode long-range dependencies. LSTMs are much better at
+capturing long-range dependencies by using the input, output, and forget
+gates.</li>
+<li>Transformers can operate over unordered sets or ordered sequences
+with positional encodings (using positional encoding to add ordering the
+sets). In contrast, RNN/LSTM expect an ordered sequence of inputs.</li>
+<li>Transformers use parallel computation where all alignment and
+attention scores for all inputs can be done in parallel. In contrast,
+RNN/LSTM uses sequential computation since the hidden state at a current
+timestep can only be computed after the previous states are calculated
+which makes them often slow to train.</li>
+</ul>
+<p><a name='multihead'></a></p>
+<h3 id="multi-headed-attention">Multi-Headed Attention</h3>
+<p>Let’s refresh our concepts from the attention unit to help us with
+transformers. <br></p>
+<ul>
+<li><strong>Dot-Product Attention:</strong></li>
+</ul>
+<div class="fig figcenter fighighlight">
+<img src="assets/att/dotproduct.png" width="80%">
+<div class="figcaption">
+Dot-Product Attention
+</div>
+</div>
+<p><br> With query q (D,), value vectors {v_1,…,v_n} where v_i (D,), key
+vectors {k_1,…,k_n} where k_i (D,), attention weights a_i, and output c
+(D,). The output is a weighted average over the value vectors.</p>
+<ul>
+<li><strong>Self-Attention:</strong> we derive values, keys, and queries
+from the input</li>
+</ul>
+<div class="fig figcenter fighighlight">
+<img src="assets/att/vkq.png" width="80%">
+<div class="figcaption">
+Value, Key, and Query
+</div>
+</div>
+<p><br> Combining the above two, we can now implement multi-headed
+scaled dot product attention for transformers.</p>
+<ul>
+<li><strong>Multi-Headed Scaled Dot Product Attention:</strong> We learn
+a parameter matrix V_i, K_i, Q_i (DxD) for each head i, which increases
+the model’s expressivity to attend to different parts of the input. We
+apply a scaling term (1/sqrt(d/h)) to the dot-product attention
+described previously in order to reduce the effect of large magnitude
+vectors.</li>
+</ul>
+<div class="fig figcenter fighighlight">
+<img src="assets/att/softmax.png" width="80%">
+<div class="figcaption">
+Multi-Headed Scaled Dot Product Attention
+</div>
+</div>
+<p><br> We can then apply dropout, generate the output of the attention
+layer, and finally add a linear transformation to the output of the
+attention operation, which allows the model to learn the relationship
+between heads, thereby improving the model’s expressivity.</p>
+<p><a name='tips'></a></p>
+<h3
+id="step-by-step-multi-headed-attention-with-intermediate-dimensions">Step-by-Step
+Multi-Headed Attention with Intermediate Dimensions</h3>
+<p>There’s a lot happening throughout the Multi-Headed Attention so
+hopefully this chart will help further clarify the intermediate steps
+and how the dimensions change after each step!</p>
+<div class="fig figcenter fighighlight">
+<img src="assets/att/multiheadgraph.PNG" width="80%">
+<div class="figcaption">
+Step-by-Step Multi-Headed Attention with Intermediate Dimensions
+</div>
+</div>
+<h3 id="a-couple-tips-on-permute-and-reshape">A couple tips on Permute
+and Reshape:</h3>
+<p>To create the multiple heads, we divide the embedding dimension by
+the number of heads and use Reshape (Ex: Reshape allows us to go from
+shape (N x S x D) to (N x S x H x D//H) ). It is important to note that
+Reshape doesn’t change the ordering of your data. It simply takes the
+original data and ‘reshapes’ it into the dimensions you provide. We use
+Permute (or can use Transpose) to rearrange the ordering of dimensions
+of the data (Ex: Permute allows us to rearrange the dimensions from (N x
+S x H x D//H) to (N x H x S x D//H) ). Notice why we needed to use
+Permute before Reshaping after the final MatMul operation. Our current
+tensor had a shape of (N x H x S x D//H) but in order to reshape it to
+be (N x S x D) we needed to first ensure that the H and D//H dimensions
+are right next to each other because reshape doesn’t change the ordering
+of the data. Therefore we use Permute first to rearrange the dimensions
+from (N x H x S x D//H) to (N x S x H x D//H) and then can use reshape
+to get the shape of (N x S x D).</p>
+<p><a name='steps'></a></p>
+<h3 id="transformer-steps-encoder-decoder">Transformer Steps:
+Encoder-Decoder</h3>
+<h3 id="encoder-block">Encoder Block</h3>
+<p>The role of the Encoder block is to encode all the image features
+(where the spatial features are extracted using pretrained CNN) into a
+set of context vectors. The context vectors outputted are a
+representation of the input sequence in a higher dimensional space. We
+define the Encoder as c = T_W(z) where z is the spatial CNN features and
+T_w(.) is the transformer encoder. In the “Attention Is All You Need”
+paper a transformer encoder block made up of N encoder blocks (N = 6, D
+= 512) is used.</p>
+<div class="fig figcenter fighighlight">
+<img src="assets/att/encoder.png" width="80%">
+<div class="figcaption">
+Encoder Block
+</div>
+</div>
+<p><br></p>
+<p>Let’s walk through the steps of the Encoder block!</p>
+<ul>
+<li>We first take in a set of input vectors X (where each input vector
+represents a word for instance)</li>
+<li>We then add positional encoding to the input vectors.</li>
+<li>We pass the positional encoded vectors through the
+<strong>Multi-head self-attention layer</strong> (where each vector
+attends on all the other vectors). The output of this layer gives us a
+set of context vectors.</li>
+<li>We have a Residual Connection after the Multi-head self-attention
+layer which allows us to bypass the attention layer if it’s not
+needed.</li>
+<li>We then apply Layer Normalization on the output which normalizes
+each individual vector.</li>
+<li>We then apply MLP over each vector individually.</li>
+<li>We then have another Residual Connection.</li>
+<li>A final Layer Normalization on the output.</li>
+<li>And finally the set of context vectors C is outputted!</li>
+</ul>
+<h3 id="decoder-block">Decoder Block</h3>
+<p>The Decoder block takes in the set of context vectors C outputted
+from the encoder block and set of input vectors X and outputs a set of
+vectors Y which defines the output sequence. We define the Decoder as
+y_t = T_S(y_{0:t-1},c) where T_D( .) is the transformer decoder. In
+the”Attention Is All You Need” paper a transformer decoder block made up
+of N decoder blocks (N = 6, D = 512) is used.</p>
+<div class="fig figcenter fighighlight">
+<img src="assets/att/decoder.png" width="80%">
+<div class="figcaption">
+Decoder Block
+</div>
+</div>
+<p><br></p>
+<p>Let’s walk through the steps of the Decoder block!</p>
+<ul>
+<li>We take in the set of input vectors X and context vectors C
+(outputted from Encoder block)</li>
+<li>We then add positional encoding to the input vectors X.</li>
+<li>We pass the positional encoded vectors through the <strong>Masked
+Multi-head self-attention layer</strong>. The mask ensures that we only
+attend over previous inputs.</li>
+<li>We have a Residual Connection after this layer which allows us to
+bypass the attention layer if it’s not needed.</li>
+<li>We then apply Layer Normalization on the output which normalizes
+each individual vector.</li>
+<li>Then we pass the output through another <strong>Multi-head attention
+layer</strong> which takes in the context vectors outputted by the
+Encoder block as well as the output of the Layer Normalization. In this
+step the Key comes from the set of context vectors C, the Value comes
+from the set of context vectors C, and the Query comes from the output
+of the Layer Normalization step.</li>
+<li>We then have another Residual Connection.</li>
+<li>Apply another Layer Normalization.</li>
+<li>Apply MLP over each vector individually.</li>
+<li>Another Residual Connection</li>
+<li>A final Layer Normalization</li>
+<li>And finally we pass the output through a Fully-connected layer which
+produces the final set of output vectors Y which is the output
+sequence.</li>
+</ul>
+<h3 id="additional-notes-on-layer-normalization-and-mlp">Additional
+Notes on Layer Normalization and MLP</h3>
+<p><strong>Layer Normalization:</strong> As seen in the Encoder and
+Decoder block implementation, we use Layer Normalization after the
+Residual Connections in both the Encoder and Decoder Blocks. Recall that
+in Layer Normalization we are normalizing across the feature dimension
+(so we are applying LayerNorm over the image features). Using Layer
+Normalization at these points helps us prevent issues with vanishing or
+exploding gradients, helps stabilize the network, and can reduce
+training time.</p>
+<p><strong>MLP:</strong> Both the encoder and decoder blocks contain
+position-wise fully-connected feed-forward networks, which are “applied
+to each position separately and identically” (Vaswani et al.). The
+linear transformations use different parameters across layers. FFN(x) =
+max(0, xW_1 + b_1)W_2 + b_2. Additionally, the combination of a
+self-attention layer and a point-wise feed-forward layer reduces the
+complexity required by convolutional layers.</p>
+<h3 id="additional-resources">Additional Resources</h3>
+<p>Additional resources related to implementation:</p>
+<ul>
+<li><a href="https://arxiv.org/abs/1706.03762">“Attention Is All You
+Need”</a></li>
+</ul>
+</body>
+</html>

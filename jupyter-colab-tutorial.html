@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Jupyter Notebook / Google Colab Tutorial</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Jupyter Notebook / Google Colab Tutorial</h1>
+</header>
+<p>A Jupyter notebook lets you write and execute Python code
+<em>locally</em> in your web browser. Jupyter notebooks make it very
+easy to tinker with code and execute it in bits and pieces; for this
+reason they are widely used in scientific computing. Colab on the other
+hand is Google’s flavor of Jupyter notebooks that is particularly suited
+for machine learning and data analysis and that runs entirely in the
+<em>cloud</em>. Colab is basically Jupyter notebook on steroids: it’s
+free, requires no setup, comes preinstalled with many packages, is easy
+to share with the world, and benefits from free access to hardware
+accelerators like GPUs and TPUs (with some caveats).</p>
+<p>To get yourself familiar with Python and notebooks, we’ll be running
+a short tutorial as a standalone Jupyter or Colab notebook. If you wish
+to use Colab, click the <code>Open in Colab</code> badge below.</p>
+<div>
+<p><a href="https://colab.research.google.com/github/cs231n/cs231n.github.io/blob/master/python-colab.ipynb" target="_blank">
+<img class="colab-badge" src="assets/badges/colab-open.svg" alt="Colab Notebook"/>
+</a></p>
+</div>
+<p>If you wish to run the notebook locally make sure your virtual
+environment was installed correctly (as per the <a
+href="%7B%7Bsite.baseurl%7D%7D/setup-instructions/">setup
+instructions</a>), activate it, then run
+<code>pip install notebook</code> to install Jupyter notebook. Next, <a
+href="https://raw.githubusercontent.com/cs231n/cs231n.github.io/master/jupyter-notebook-tutorial.ipynb">open
+the notebook</a> and download it to a directory of your choice by
+right-clicking on the page and selecting <code>Save Page As</code>. Then
+<code>cd</code> to that directory and run the following in your
+terminal:</p>
+<pre><code>jupyter notebook</code></pre>
+<p>Once your notebook server is up and running, point your web browser
+to <code>http://localhost:8888</code> to start using your notebooks. If
+everything worked correctly, you should see a screen like this, showing
+all available notebooks in the current directory:</p>
+<div class="fig figcenter">
+<p><img src='assets/ipython-tutorial/file-browser.png'></p>
+</div>
+<p>Click <code>jupyter-notebook-tutorial.ipynb</code> and follow the
+instructions in the notebook. Enjoy!</p>
+<!-- If you click through to a notebook file, you will see a screen like this: -->
+<!-- <div class='fig figcenter'>
+  <img src='assets/ipython-tutorial/notebook-1.png'>
+</div>
+
+A Jupyter notebook is made up of a number of **cells**. Each cell can contain
+Python code. You can execute a cell by clicking on it (the highlight color will
+switch from blue to green) and pressing `Shift-Enter`.
+When you do so, the code in the cell will run, and the output of the cell
+will be displayed beneath the cell. For example, after running the first cell,
+the notebook shoud look like this:
+
+<div class='fig figcenter'>
+  <img src='assets/ipython-tutorial/notebook-2.png'>
+</div>
+
+Global variables are shared between cells. Executing the second cell thus gives
+the following result:
+
+<div class='fig figcenter'>
+  <img src='assets/ipython-tutorial/notebook-3.png'>
+</div>
+
+There are a few keyboard shortcuts you should be aware of to make your notebook
+experience more pleasant. To escape cell editing, press `esc`. The highlight color
+should switch back to blue. To place a cell below the current one, press `b`.
+To place a cell above the current one, press `a`. Finally, to delete a cell, press `dd`.
+
+You can restart a notebook and clear all cells by clicking `Kernel -> Restart & Clear Output`.
+
+<div class='fig figcenter'>
+  <img src='assets/ipython-tutorial/notebook-restart.png'>
+</div>
+
+By convention, Jupyter notebooks are expected to be run from top to bottom.
+Failing to execute some cells or executing cells out of order can result in
+errors. After restarting the notebook, try running the second cell directly:
+
+<div class='fig figcenter'>
+  <img src='assets/ipython-tutorial/notebook-error.png'>
+</div>
+
+After you have modified a Jupyter notebook for one of the assignments by
+modifying or executing some of its cells, remember to **save your changes!**
+
+<div class='fig figcenter'>
+  <img src='assets/ipython-tutorial/save-notebook.png'>
+</div>
+
+This has only been a brief introduction to Jupyter notebooks, but it should
+be enough to get you up and running on the assignments for this course. -->
+</body>
+</html>
